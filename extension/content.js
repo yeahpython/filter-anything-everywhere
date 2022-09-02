@@ -192,12 +192,22 @@ function makeRegex(callback) {
     chrome.storage.local.get(["blacklist"/*, "enabled"*/], function(items) {
       var bannedWords = items["blacklist"];
   	    var escapedBannedWords = $.map(bannedWords, function(val, key) {
-          if (key.match(/[\u3400-\u9FBF]/)) {
-            // Do not require word endings for Chinese characters.
-            return escapeRegExp(key);
-          } else {
-  	        return "\\b" + escapeRegExp(key) + "\\b";
+          let result = escapeRegExp(key);
+
+          // Require word boundaries next to letters except in languages that don't
+          // necessarily use spaces between words
+          // See https://www.w3.org/International/articles/typography/linebreak.en
+          const letterInLanguageWithoutSpacesRegexp =
+            /[\p{sc=Han}\p{sc=Katakana}\p{sc=Hangul}\p{sc=Hiragana}\p{sc=Khmer}\p{sc=Lao}\p{sc=Myanmar}\p{sc=Thai}\p{sc=Balinese}\p{sc=Batak}\p{sc=Javanese}\p{sc=Cham}\p{sc=Vai}]/u;
+          const lastChar = key.slice(-1);
+          const firstChar = key.slice(0, 1);
+          if (lastChar.match(/\p{Letter}/u) && !lastChar.match(letterInLanguageWithoutSpacesRegexp)) {
+            result = result + "\\b";
           }
+          if (firstChar.match(/^\p{Letter}/u) && !firstChar.match(letterInLanguageWithoutSpacesRegexp)) {
+            result = "\\b" + result;
+          }
+          return result;
   	    });
   	    var regexString = escapedBannedWords.map(function(elem, index){
   	      return makeRegexCharactersOkay(elem);
