@@ -1,14 +1,5 @@
 var input = document.getElementById("input");
 
-// options.js, content.js and browser_action.js all need to have the same version
-function getCanonicalHostname(name) {
-  if (name.startsWith("www.")) {
-    return name.substring(4);
-  } else {
-    return name;
-  }
-}
-
 // Add the word from $("#input") to the stored blacklist
 function addWord() {
   var word = input.value;

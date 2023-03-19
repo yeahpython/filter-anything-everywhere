@@ -2,15 +2,6 @@ window.hasAqi = true;
 
 var AQI_PREFIX = "aqi-"
 
-// options.js, content.js and browser_action.js all need to have the same version
-function getCanonicalHostname(name) {
-  if (name.startsWith("www.")) {
-    return name.substring(4);
-  } else {
-    return name;
-  }
-}
-
 // Utility function for getting settings for the current host.
 function fetchStatusForHost(key, cb) {
   var current_host = getCanonicalHostname(window.location.host);

@@ -11,7 +11,7 @@
     {
       "matches": ["https://*/*", "http://*/*"],
       "css": ["content.css"],
-      "js": ["third-party/jquery-1.12.0.min.js", "content.js"],
+      "js": ["hostname.js", "third-party/jquery-1.12.0.min.js", "content.js"],
       "run_at": "document_end",
       "all_frames" : true
     }
