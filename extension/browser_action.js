@@ -1,3 +1,6 @@
+import $ from "jquery";
+import { getCanonicalHostname } from "./hostname.js";
+
 var input = document.getElementById("input");
 
 // Add the word from $("#input") to the stored blacklist
@@ -117,7 +120,7 @@ function rerender() {
 
       $("#toggle").html("&#10074;&#10074;").removeClass("resume").show();
       const tab_url = new URL(tab.url);
-      canonical_hostname = getCanonicalHostname(tab_url.hostname);
+      const canonical_hostname = getCanonicalHostname(tab_url.hostname);
       var hostname_disabled = (items["disable_site"][canonical_hostname] === true)
       $("#disable_site")
         .find("#disable_site_label")

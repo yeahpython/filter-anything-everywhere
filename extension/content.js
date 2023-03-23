@@ -1,3 +1,6 @@
+import $ from "jquery";
+import { getCanonicalHostname } from "./hostname.js";
+
 window.hasAqi = true;
 
 var AQI_PREFIX = "aqi-"
@@ -112,6 +115,7 @@ function getFeedlikeAncestor(node){
       best_index = i;
     }
   }
+  let chosen_dom_element = null;
   if (best_index < 0) {
     console.log("Uh oh: best_index < 0");
     chosen_dom_element = node

@@ -11,13 +11,13 @@
     {
       "matches": ["https://*/*", "http://*/*"],
       "css": ["content.css"],
-      "js": ["hostname.js", "third-party/jquery-1.12.0.min.js", "content.js"],
+      "js": ["content_bundle.js"],
       "run_at": "document_end",
       "all_frames" : true
     }
   ],
   "background": {
-    "service_worker": "background.js",
+    "service_worker": "background_bundle.js",
     "type": "module"
   },
   "icons": {

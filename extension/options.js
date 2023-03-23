@@ -1,11 +1,4 @@
-// options.js, content.js and browser_action.js all need to have the same version
-function getCanonicalHostname(name) {
-  if (name.startsWith("www.")) {
-    return name.substring(4);
-  } else {
-    return name;
-  }
-}
+import { getCanonicalHostname } from "./hostname.js";
 
 // Saves options to chrome.storage.local.
 function save_options() {
@@ -63,7 +56,7 @@ function restore_options() {
   }, function(items) {
     var hide_completely = items["hide_completely"]
     var hide_completely_array = []
-    for (key in hide_completely) {
+    for (const key in hide_completely) {
       if (hide_completely[key] === true) {
         hide_completely_array.push(key);
       }
@@ -73,7 +66,7 @@ function restore_options() {
 
     var blacklist = items["blacklist"]
     var blacklist_array = []
-    for (key in blacklist) {
+    for (const key in blacklist) {
       if (blacklist[key] === true) {
         blacklist_array.push(key);
       }
@@ -82,7 +75,7 @@ function restore_options() {
 
     var disable_site = items["disable_site"]
     var disable_site_array = []
-    for (key in disable_site) {
+    for (const key in disable_site) {
       if (disable_site[key] === true) {
         disable_site_array.push(key);
       }
