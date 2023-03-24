@@ -34,9 +34,39 @@ describe('regexpFromWordList', () => {
       expect(re.test('thingamabob')).toBe(false);
     });
   });
+  describe('with asterisk [\'a*c\']', () => {
+    const re = regexpFromWordList(['a*c']);
+    it('should allow zero letter substitution', () => {
+      expect(re.test('ac')).toBe(true);
+    });
+    it('should allow single letter substitution', () => {
+      expect(re.test('abc')).toBe(true);
+    });
+    it('should allow multi letter substitution', () => {
+      expect(re.test('abbc')).toBe(true);
+    });
+  });
+  describe('with wildcard [\'a?c\']', () => {
+    const re = regexpFromWordList(['a?c']);
+    it('should allow single letter substitution', () => {
+      expect(re.test('abc')).toBe(true);
+    });
+    it('should not allow multi letter substitution', () => {
+      expect(re.test('abbc')).toBe(false);
+    });
+    it('should not allow zero letter substitution', () => {
+      expect(re.test('ac')).toBe(false);
+    });
+  });
   describe('with Chinese [\'你好\']', () => {
     const re = regexpFromWordList(['你好']);
     it('should not require word boundaries', () => {
+      expect(re.test('你好吗')).toBe(true);
+    });
+  });
+  describe('with Chinese wildcard [\'你?吗\']', () => {
+    const re = regexpFromWordList(['你?吗']);
+    it('should allow single character substitution', () => {
       expect(re.test('你好吗')).toBe(true);
     });
   });
