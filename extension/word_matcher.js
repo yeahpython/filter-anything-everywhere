@@ -5,24 +5,6 @@ function escapeRegExp(str) {
             .replace(/\?/g, "[^\\s]");
 }
 
-// Some characters are represented by more than a byte. To match them
-// in a regular expression, we need to modify the way they are stored.
-function makeRegexCharactersOkay(string){
-  var hex, i;
-
-  var result = "";
-  for (i=0; i<string.length; i++) {
-      hex = string.charCodeAt(i);
-      if (hex < 256) {
-        result += string.charAt(i);
-      } else {
-        hex = hex.toString(16);
-        result += "\\u" + (("000"+hex).slice(-4));
-      }
-  }
-  return result;
-}
-
 export function regexpFromWordList(bannedWords) {
   var escapedBannedWords = bannedWords.map((word) => {
     let result = escapeRegExp(word);
@@ -35,20 +17,18 @@ export function regexpFromWordList(bannedWords) {
     const lastChar = word.slice(-1);
     const firstChar = word.slice(0, 1);
     if (lastChar.match(/\p{Letter}/u) && !lastChar.match(letterInLanguageWithoutSpacesRegexp)) {
-      result = result + "\\b";
+      result = result + "(?!\\p{Letter})";
     }
-    if (firstChar.match(/^\p{Letter}/u) && !firstChar.match(letterInLanguageWithoutSpacesRegexp)) {
-      result = "\\b" + result;
+    if (firstChar.match(/\p{Letter}/u) && !firstChar.match(letterInLanguageWithoutSpacesRegexp)) {
+      result = "(?<!\\p{Letter})" + result;
     }
     return result;
   });
-  var regexString = escapedBannedWords.map(function(elem, index){
-    return makeRegexCharactersOkay(elem);
-  }).join("|");
+  var regexString = escapedBannedWords.join("|");
 
   if (regexString == "") {
     // Rejects everything
     regexString = "[^\\w\\W]";
   }
-  return new RegExp(regexString, "i");
+  return new RegExp(regexString, "iu");
 }

@@ -46,4 +46,26 @@ describe('regexpFromWordList', () => {
       expect(re.test('私はアマンダです。')).toBe(true);
     });
   });
+  describe('with Bulgarian [\'учител\']', () => {
+    const re = regexpFromWordList(['учител']);
+    it('should match the complete word', () => {
+      expect(re.test('Аз съм учител.')).toBe(true);
+    });
+    it('should match the capitalized version', () => {
+      expect(re.test('Аз съм Учител.')).toBe(true);
+    });
+    it('should not match fragments of words such as \'учителище\'', () => {
+      expect(re.test('учителище')).toBe(false);
+    });
+  });
+  describe('with parenthesized terms [\'(sic)\']', () => {
+    const re = regexpFromWordList(['(sic)']);
+    it('should match normally when surrounded by spaces', () => {
+      expect(re.test('He like (sic) burgers')).toBe(true);
+    });
+
+    it('should also match when embedded in a word', () => {
+      expect(re.test('Abc(sic)def')).toBe(true);
+    });
+  });
 });
