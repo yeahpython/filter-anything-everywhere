@@ -1,5 +1,6 @@
 import $ from "jquery";
 import { getCanonicalHostname } from "./hostname.js";
+import { regexpFromWordList } from "./word_matcher.js";
 
 window.hasAqi = true;
 
@@ -18,36 +19,6 @@ function fetchStatusForHost(key, cb) {
 }
 
 var min_feed_neighbors = 3;
-
-// Escape bad characters from user input.
-function escapeRegExpOld(str) {
-  return str.replace(/[\-\[\]\/\{\}\(\)\*\+\?\.\\\^\$\|]/g, "\\$&");
-}
-
-// Escape bad characters from user input, but allow wildcards.
-function escapeRegExp(str) {
-  return str.replace(/[\-\[\]\/\{\}\(\)\+\.\\\^\$\|]/g, "\\$&")
-            .replace(/\*/g, "[^\\s]*")
-            .replace(/\?/g, "[^\\s]");
-}
-
-// Some characters are represented by more than a byte. To match them
-// in a regular expression, we need to modify the way they are stored.
-function makeRegexCharactersOkay(string){
-  var hex, i;
-
-  var result = "";
-  for (i=0; i<string.length; i++) {
-      hex = string.charCodeAt(i);
-      if (hex < 256) {
-        result += string.charAt(i);
-      } else {
-        hex = hex.toString(16);
-        result += "\\u" + (("000"+hex).slice(-4));
-      }
-  }
-  return result;
-}
 
 function isSimilar(my_rect, sib_rect) {
   let my_x = my_rect.left + my_rect.width / 2;
@@ -186,34 +157,7 @@ function makeRegex(callback) {
   try {
     chrome.storage.local.get(["blacklist"/*, "enabled"*/], function(items) {
       var bannedWords = items["blacklist"];
-  	    var escapedBannedWords = $.map(bannedWords, function(val, key) {
-          let result = escapeRegExp(key);
-
-          // Require word boundaries next to letters except in languages that don't
-          // necessarily use spaces between words
-          // See https://www.w3.org/International/articles/typography/linebreak.en
-          const letterInLanguageWithoutSpacesRegexp =
-            /[\p{sc=Han}\p{sc=Katakana}\p{sc=Hangul}\p{sc=Hiragana}\p{sc=Khmer}\p{sc=Lao}\p{sc=Myanmar}\p{sc=Thai}\p{sc=Balinese}\p{sc=Batak}\p{sc=Javanese}\p{sc=Cham}\p{sc=Vai}]/u;
-          const lastChar = key.slice(-1);
-          const firstChar = key.slice(0, 1);
-          if (lastChar.match(/\p{Letter}/u) && !lastChar.match(letterInLanguageWithoutSpacesRegexp)) {
-            result = result + "\\b";
-          }
-          if (firstChar.match(/^\p{Letter}/u) && !firstChar.match(letterInLanguageWithoutSpacesRegexp)) {
-            result = "\\b" + result;
-          }
-          return result;
-  	    });
-  	    var regexString = escapedBannedWords.map(function(elem, index){
-  	      return makeRegexCharactersOkay(elem);
-  	    }).join("|");
-  	// }
-
-      if (regexString == "") {
-        // Rejects everything
-        regexString = "[^\\w\\W]";
-      }
-      callback(new RegExp(regexString, "i"));
+      callback(regexpFromWordList(Object.keys(bannedWords)));
     });
   } catch (err) {
     console.log("Ran into error while making regex:" + err.message);
