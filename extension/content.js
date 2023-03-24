@@ -7,15 +7,13 @@ window.hasAqi = true;
 var AQI_PREFIX = "aqi-"
 
 // Utility function for getting settings for the current host.
-function fetchStatusForHost(key, cb) {
+async function fetchStatusForHost(key, cb) {
   var current_host = getCanonicalHostname(window.location.host);
-  chrome.storage.local.get(key, function(items) {
-    if (items[key] === undefined) {
-      cb(false);
-      return;
-    }
-    cb(items[key][current_host] === true);
-  });
+  const items = await chrome.storage.local.get(key);
+  if (items[key] === undefined) {
+    return false;
+  }
+  return items[key][current_host] === true;
 }
 
 var min_feed_neighbors = 3;
@@ -153,12 +151,11 @@ function addNotification(elem, put_inside) {
 }
 
 // Assembles a regex from stored blacklist
-function makeRegex(callback) {
+async function makeRegex() {
   try {
-    chrome.storage.local.get(["blacklist"/*, "enabled"*/], function(items) {
-      var bannedWords = items["blacklist"];
-      callback(regexpFromWordList(Object.keys(bannedWords)));
-    });
+    const items = await chrome.storage.local.get(["blacklist"/*, "enabled"*/])
+    var bannedWords = items["blacklist"];
+    return regexpFromWordList(Object.keys(bannedWords));
   } catch (err) {
     console.log("Ran into error while making regex:" + err.message);
   }
@@ -248,31 +245,14 @@ function render(enabled_everywhere, hide_completely, disable_site, regex) {
 }
 
 // Fetch all parameters and then redraw
-function restart() {
-  let enabled_everywhere, hide_completely, disable_site;
+async function restart() {
   // todo: Do it in one operation.
-  new Promise((resolve, reject) => {
-    chrome.storage.local.get({"enabled" : true}, (items) => resolve(items["enabled"]));
-  })
-  .then( (enabled_everywhere_in) => {
-    enabled_everywhere = enabled_everywhere_in;
-    return new Promise((resolve, reject) => {
-      fetchStatusForHost("hide_completely", resolve);
-    });
-  })
-  .then(hide_completely_in => {
-    hide_completely = hide_completely_in;
-    return new Promise((resolve, reject) => {
-      fetchStatusForHost("disable_site", resolve);
-    });
-  })
-  .then((disable_site_in) => {
-    disable_site = disable_site_in;
-    return new Promise((resolve, reject) => {
-      makeRegex(resolve);
-    });
-  })
-  .then((regex) => {
+  try {
+    const items = await chrome.storage.local.get({"enabled" : true});
+    const enabled_everywhere = items["enabled"];
+    const hide_completely = await fetchStatusForHost("hide_completely");
+    const disable_site = await fetchStatusForHost("disable_site");
+    const regex = await makeRegex();
     render(enabled_everywhere, hide_completely, disable_site, regex);
 
     // This sends a messages to the background script, which can see which tab ID this is.
@@ -284,8 +264,9 @@ function restart() {
         chrome.runtime.sendMessage({"count": $(".aqi-hide, .aqi-hide-completely").length});
       }
     }
-  })
-  .catch((err)=> console.log(err));
+  } catch(err) {
+    console.log(err);
+  }
 }
 
 // When the blacklist changes the regex needs to be updated
