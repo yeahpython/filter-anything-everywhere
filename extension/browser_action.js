@@ -98,7 +98,6 @@ function showErrorRefreshRequired() {
 
 // Shows a list of words generated from the blacklist.
 async function rerender() {
-  const list = $('<ul/>');
   const items = await chrome.storage.local.get(
     {blacklist: {}, enabled: true, hide_completely: {}, disable_site: {}});
     // async function(items)  {
@@ -198,6 +197,7 @@ async function rerender() {
     $('#list').show();
     // only render list if it is enabled
     if (items['blacklist'] && items['blacklist'].length !== 0) {
+      const list = $('<ul/>');
       $.each(items['blacklist'], function(currentValue, trueOrFalse) {
         $('<li/>').html(currentValue).appendTo(list);
       });
