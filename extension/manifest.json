@@ -2,18 +2,14 @@
   "name": "Filter Anything Everywhere",
   "description": "Filter feeds, lists and comment sections on all websites at the same time with this universal keyword blocker.",
   "version": "1.3.2",
-  "permissions": [
-    "activeTab",
-    "scripting",
-    "storage"
-  ],
+  "permissions": ["activeTab", "scripting", "storage"],
   "content_scripts": [
     {
       "matches": ["https://*/*", "http://*/*"],
       "css": ["content.css"],
       "js": ["content_bundle.js"],
       "run_at": "document_end",
-      "all_frames" : true
+      "all_frames": true
     }
   ],
   "background": {
@@ -22,7 +18,7 @@
   },
   "icons": {
     "128": "images/glasses128.png"
-    },
+  },
   "options_ui": {
     "page": "options.html",
     "open_in_page": false
@@ -35,9 +31,6 @@
     "default_title": "Filter Anything Everywhere",
     "default_popup": "browser_action.html"
   },
-  "host_permissions": [
-    "https://*/*",
-    "http://*/*"
-  ],
+  "host_permissions": ["https://*/*", "http://*/*"],
   "manifest_version": 3
 }

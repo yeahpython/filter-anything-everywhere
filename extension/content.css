@@ -1,69 +1,70 @@
 /* If notification is inside, supress non-notification children */
-.aqi-hide.aqi-put-inside-mode:not(.aqi-hide-exception) > *:not(.aqi-notification) {
-	visibility: hidden !important;
-	pointer-events: none !important;
-	max-height:0px !important;
+.aqi-hide.aqi-put-inside-mode:not(.aqi-hide-exception)
+  > *:not(.aqi-notification) {
+  visibility: hidden !important;
+  pointer-events: none !important;
+  max-height: 0px !important;
 }
 
 /* Restrict size of hidden content */
 .aqi-hide:not(.aqi-hide-exception) {
-	line-height:0px;
-	height:30px;
-	max-height:30px !important;
-	overflow-y: hidden !important;
-	overflow-x: hidden !important;
-	min-height:30px !important;
+  line-height: 0px;
+  height: 30px;
+  max-height: 30px !important;
+  overflow-y: hidden !important;
+  overflow-x: hidden !important;
+  min-height: 30px !important;
 }
 
 /* Hide contents completely if notification is NOT inside */
 .aqi-hide:not(.aqi-put-inside-mode):not(.aqi-hide-exception) {
-	visibility: hidden !important;
-	pointer-events: none !important;
+  visibility: hidden !important;
+  pointer-events: none !important;
 }
 
 .aqi-hide-completely {
-	display:none !important;
+  display: none !important;
 }
 
 .aqi-inside {
-	position:absolute;
-	left:0px !important;
-	top:0px !important;
-	z-index: 9999 !important;
-	display: inline !important;
-	white-space: nowrap !important;
+  position: absolute;
+  left: 0px !important;
+  top: 0px !important;
+  z-index: 9999 !important;
+  display: inline !important;
+  white-space: nowrap !important;
 }
 .aqi-arrow-wrapper {
-	padding:10px;
-	cursor:pointer;
-	display:inline-block !important;
-	vertical-align: middle;
-	line-height:0px;
-	cursor:pointer;
+  padding: 10px;
+  cursor: pointer;
+  display: inline-block !important;
+  vertical-align: middle;
+  line-height: 0px;
+  cursor: pointer;
 }
 .aqi-arrow {
-	width: 0 !important; 
-    height: 0 !important; 
-    border-top: 5px solid transparent !important;
-    border-bottom: 5px solid transparent !important;
-  
-    border-left: 5px solid rgba(0, 0, 0, 0.5);
-    display:inline-block !important;
-    vertical-align: middle;
-    line-height:0px;
-    cursor:pointer;
+  width: 0 !important;
+  height: 0 !important;
+  border-top: 5px solid transparent !important;
+  border-bottom: 5px solid transparent !important;
+
+  border-left: 5px solid rgba(0, 0, 0, 0.5);
+  display: inline-block !important;
+  vertical-align: middle;
+  line-height: 0px;
+  cursor: pointer;
 }
 
 .aqi-notification.aqi-disabled {
-	display:none !important;
+  display: none !important;
 }
 
 .aqi-notification:not(:hover) .aqi-inside {
-	color: rgba(128, 128, 128, 0.2);
+  color: rgba(128, 128, 128, 0.2);
 }
 
 .aqi-notification {
-	position:relative !important;
-	font-size: 8pt !important;
-	display:inline !important;
+  position: relative !important;
+  font-size: 8pt !important;
+  display: inline !important;
 }

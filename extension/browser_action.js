@@ -1,5 +1,5 @@
 import $ from 'jquery';
-import {getCanonicalHostname} from './hostname.js';
+import { getCanonicalHostname } from './hostname.js';
 
 const input = document.getElementById('input');
 
@@ -10,35 +10,35 @@ function addWord() {
     return;
   }
   // Get the stored blacklist
-  chrome.storage.local.get('blacklist', function(items) {
-  	let blacklist = items['blacklist'];
-  	// Add word to our copy of the blacklist
+  chrome.storage.local.get('blacklist', function (items) {
+    let blacklist = items['blacklist'];
+    // Add word to our copy of the blacklist
     if (blacklist === undefined) {
       blacklist = {};
     }
-  	blacklist[word] = true;
+    blacklist[word] = true;
     // Set the blacklist with our modified copy
-  	chrome.storage.local.set({'blacklist': blacklist}, function() {
+    chrome.storage.local.set({ blacklist: blacklist }, function () {
       rerender();
       input.value = '';
     });
   });
 }
 
-$('#toggle').click(function() {
-  chrome.storage.local.get({'enabled': true}, function(items) {
-    chrome.storage.local.set({'enabled': !items['enabled']}, rerender);
+$('#toggle').click(function () {
+  chrome.storage.local.get({ enabled: true }, function (items) {
+    chrome.storage.local.set({ enabled: !items['enabled'] }, rerender);
   });
 });
 
 // Add the word to the blacklist when the user presses enter
-$('#input').keyup(function(e) {
+$('#input').keyup(function (e) {
   if (e.keyCode == 13) {
     addWord();
   }
 });
 
-$('#options').click(function() {
+$('#options').click(function () {
   if (chrome.runtime.openOptionsPage) {
     // New way to open options pages, if supported (Chrome 42+).
     chrome.runtime.openOptionsPage();
@@ -48,19 +48,19 @@ $('#options').click(function() {
   }
 });
 
-$('#feedback').click(function() {
+$('#feedback').click(function () {
   window.open('https://goo.gl/forms/YTaZXZA0IFys1v6y2');
 });
 
 // Remove any word in the blacklist that is clicked from the storage
-$('#triggers').click(function(e) {
+$('#triggers').click(function (e) {
   if ($(event.target).is('li')) {
     const word = event.target.innerHTML;
-    chrome.storage.local.get('blacklist', function(items) {
+    chrome.storage.local.get('blacklist', function (items) {
       const blacklist = items['blacklist'];
       if (blacklist) {
         delete blacklist[word];
-        chrome.storage.local.set({'blacklist': blacklist}, function() {
+        chrome.storage.local.set({ blacklist: blacklist }, function () {
           rerender();
         });
       }
@@ -71,132 +71,150 @@ $('#triggers').click(function(e) {
 // Shows a list of words generated from the blacklist.
 function rerender() {
   const list = $('<ul/>');
-  chrome.storage.local.get({'blacklist': {}, 'enabled': true, 'hide_completely': {}, 'disable_site': {}}, async function(items) {
-    if (items['enabled'] === false) {
-      $('#toggle').html('&#9658;').addClass('resume').show();
-      $('#list').hide();
-      $('#disable_site').hide();
-      $('#hide_completely').hide();
-      $('#status').text('Filter Anything Everywhere is paused.').show();
-      return;
-    }
+  chrome.storage.local.get(
+    { blacklist: {}, enabled: true, hide_completely: {}, disable_site: {} },
+    async function (items) {
+      if (items['enabled'] === false) {
+        $('#toggle').html('&#9658;').addClass('resume').show();
+        $('#list').hide();
+        $('#disable_site').hide();
+        $('#hide_completely').hide();
+        $('#status').text('Filter Anything Everywhere is paused.').show();
+        return;
+      }
 
-    const [tab] = await chrome.tabs.query({active: true, currentWindow: true});
+      const [tab] = await chrome.tabs.query({
+        active: true,
+        currentWindow: true,
+      });
 
-    const injection = {
-      target: {tabId: tab.id},
-      func: () => {
-        return window.hasAqi;
-      },
-    };
+      const injection = {
+        target: { tabId: tab.id },
+        func: () => {
+          return window.hasAqi;
+        },
+      };
 
-    chrome.scripting.executeScript(injection, function(injection_results) {
-      console.log('injection_results', injection_results);
+      chrome.scripting.executeScript(injection, function (injection_results) {
+        console.log('injection_results', injection_results);
 
-      if (chrome.runtime.lastError) {
-        const errorMsg = chrome.runtime.lastError.message;
-        if (errorMsg == 'Cannot access a chrome:// URL' || injection_results == undefined) {
-          $('#disable_site input[type=checkbox]')
-              .hide();
+        if (chrome.runtime.lastError) {
+          const errorMsg = chrome.runtime.lastError.message;
+          if (
+            errorMsg == 'Cannot access a chrome:// URL' ||
+            injection_results == undefined
+          ) {
+            $('#disable_site input[type=checkbox]').hide();
+            $('#disable_site_label').hide();
+            $('#disable_site').show();
+            $('#hide_completely').hide();
+            $('#list').hide();
+            $('#toggle').hide();
+            $('#status').text("Extensions aren't allowed on this page.").show();
+            return;
+          }
+        }
+        if (!injection_results[0].result) {
+          $('#disable_site input[type=checkbox]').hide();
           $('#disable_site_label').hide();
           $('#disable_site').show();
           $('#hide_completely').hide();
           $('#list').hide();
           $('#toggle').hide();
-          $('#status').text('Extensions aren\'t allowed on this page.').show();
+          $('#status')
+            .text(
+              'Looks like a new installation. To start filtering, refresh the page.',
+            )
+            .show();
           return;
         }
-      }
-      if (!injection_results[0].result) {
-        $('#disable_site input[type=checkbox]')
-            .hide();
-        $('#disable_site_label').hide();
-        $('#disable_site').show();
-        $('#hide_completely').hide();
-        $('#list').hide();
-        $('#toggle').hide();
-        $('#status').text('Looks like a new installation. To start filtering, refresh the page.').show();
-        return;
-      }
 
-      $('#toggle').html('&#10074;&#10074;').removeClass('resume').show();
-      const tab_url = new URL(tab.url);
-      const canonical_hostname = getCanonicalHostname(tab_url.hostname);
-      const hostname_disabled = (items['disable_site'][canonical_hostname] === true);
-      $('#disable_site')
+        $('#toggle').html('&#10074;&#10074;').removeClass('resume').show();
+        const tab_url = new URL(tab.url);
+        const canonical_hostname = getCanonicalHostname(tab_url.hostname);
+        const hostname_disabled =
+          items['disable_site'][canonical_hostname] === true;
+        $('#disable_site')
           .find('#disable_site_label')
           .html('Filter ' + canonical_hostname)
           .show()
           .end()
           .find('input[type=checkbox]')
           .prop('checked', !hostname_disabled)
-          .click(function() {
-            chrome.storage.local.get({'disable_site': {}}, function(items) {
+          .click(function () {
+            chrome.storage.local.get({ disable_site: {} }, function (items) {
               const disable_site = items['disable_site'];
               if (hostname_disabled) {
                 delete disable_site[canonical_hostname];
               } else {
                 disable_site[canonical_hostname] = true;
               }
-              chrome.storage.local.set({'disable_site': disable_site});
+              chrome.storage.local.set({ disable_site: disable_site });
             });
           })
           .show()
           .end()
           .show();
-      if (hostname_disabled) {
-        $('#list').hide();
-        $('#status').hide();
-        $('#hide_completely').hide();
-        return;
-      }
-      if (!hostname_disabled) {
-        const hostname_hide_completely = (items['hide_completely'][canonical_hostname] === true);
-        if (hostname_hide_completely) {
+        if (hostname_disabled) {
+          $('#list').hide();
           $('#status').hide();
-        } else {
-          $('#status').hide();
+          $('#hide_completely').hide();
+          return;
         }
-        $('#hide_completely')
+        if (!hostname_disabled) {
+          const hostname_hide_completely =
+            items['hide_completely'][canonical_hostname] === true;
+          if (hostname_hide_completely) {
+            $('#status').hide();
+          } else {
+            $('#status').hide();
+          }
+          $('#hide_completely')
             .find('#hide_completely_label')
             .html('Indicate filtered content on this site')
             .show()
             .end()
             .find('input[type=checkbox]')
             .prop('checked', !hostname_hide_completely)
-            .click(function() {
-              chrome.storage.local.get({'hide_completely': {}}, function(items) {
-                const hide_completely = items['hide_completely'];
-                if (hostname_hide_completely) {
-                  delete hide_completely[canonical_hostname];
-                } else {
-                  hide_completely[canonical_hostname] = true;
-                }
-                chrome.storage.local.set({'hide_completely': hide_completely});
-              });
+            .click(function () {
+              chrome.storage.local.get(
+                { hide_completely: {} },
+                function (items) {
+                  const hide_completely = items['hide_completely'];
+                  if (hostname_hide_completely) {
+                    delete hide_completely[canonical_hostname];
+                  } else {
+                    hide_completely[canonical_hostname] = true;
+                  }
+                  chrome.storage.local.set({
+                    hide_completely: hide_completely,
+                  });
+                },
+              );
             })
             .show()
             .end()
             .show();
 
-        $('#list').show();
-        // only render list if it is enabled
-        if (items['blacklist'] && items['blacklist'].length !== 0) {
-          $.each(items['blacklist'], function(currentValue, trueOrFalse) {
-            $('<li/>').html(currentValue).appendTo(list);
-          });
-          $('#triggers').html(list);
-        } else {
-          $('#triggers').html('blacklist is empty');
+          $('#list').show();
+          // only render list if it is enabled
+          if (items['blacklist'] && items['blacklist'].length !== 0) {
+            $.each(items['blacklist'], function (currentValue, trueOrFalse) {
+              $('<li/>').html(currentValue).appendTo(list);
+            });
+            $('#triggers').html(list);
+          } else {
+            $('#triggers').html('blacklist is empty');
+          }
         }
-      }
-    });
-  });
+      });
+    },
+  );
 }
 
 // Initial render
 rerender();
 
-chrome.storage.onChanged.addListener(function(changes, namespace) {
+chrome.storage.onChanged.addListener(function (changes, namespace) {
   rerender();
 });

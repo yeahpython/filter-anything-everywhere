@@ -1,39 +1,56 @@
 <!DOCTYPE html>
 <html>
-<head>
-  <title>Filter Anything Everywhere Options</title>
-  <style>
-    body: { padding: 10px; }
-  </style>
-</head>
+  <head>
+    <title>Filter Anything Everywhere Options</title>
+    <style>
+      body: {
+        padding: 10px;
+      }
+    </style>
+  </head>
 
-<body>
-  <label>
-    <input type="checkbox" id="enabled">
-    Enable filtering
-  </label>
-  <br><br>
-  Filter anything that has the following words:
-  <br>
-  <textarea name="Text2" cols="60" rows="5" id="blacklist" placeholder="One word per line! e.g. bunnies"></textarea>
-  <br>
+  <body>
+    <label>
+      <input type="checkbox" id="enabled" />
+      Enable filtering
+    </label>
+    <br /><br />
+    Filter anything that has the following words:
+    <br />
+    <textarea
+      name="Text2"
+      cols="60"
+      rows="5"
+      id="blacklist"
+      placeholder="One word per line! e.g. bunnies"
+    ></textarea>
+    <br />
 
-  Disable filtering on these subdomains:
-  <br>
-  <textarea name="Text2" cols="60" rows="5" id="disable_site" placeholder="One subdomain per line! e.g. en.wikipedia.org"></textarea>
-  <br>
+    Disable filtering on these subdomains:
+    <br />
+    <textarea
+      name="Text2"
+      cols="60"
+      rows="5"
+      id="disable_site"
+      placeholder="One subdomain per line! e.g. en.wikipedia.org"
+    ></textarea>
+    <br />
 
-  Don't show hidden content indicators on the following subdomains:
-  <br>
-  <textarea name="Text1" cols="60" rows="5" id="hide_completely" placeholder="One subdomain per line! e.g. news.google.com"></textarea>
-  <br>
+    Don't show hidden content indicators on the following subdomains:
+    <br />
+    <textarea
+      name="Text1"
+      cols="60"
+      rows="5"
+      id="hide_completely"
+      placeholder="One subdomain per line! e.g. news.google.com"
+    ></textarea>
+    <br />
 
+    <button id="save">Save</button>
+    <div id="status" style="display: inline"></div>
 
-  
-
- 
-  <button id="save">Save</button><div id="status" style="display:inline"></div>
-  
-  <script type = "text/javascript" src="options_bundle.js"></script>
-</body>
+    <script type="text/javascript" src="options_bundle.js"></script>
+  </body>
 </html>

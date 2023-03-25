@@ -1,6 +1,6 @@
 import $ from 'jquery';
-import {getCanonicalHostname} from './hostname.js';
-import {regexpFromWordList} from './word_matcher.js';
+import { getCanonicalHostname } from './hostname.js';
+import { regexpFromWordList } from './word_matcher.js';
 
 window.hasAqi = true;
 
@@ -34,11 +34,10 @@ function isSimilar(my_rect, sib_rect) {
   }
 }
 
-
 function getFeedlikeAncestor(node) {
   // parents ordered by document order
   const parents = $(node).add($(node).parents());
-  const siblingness_counts = parents.map(function(index, elem) {
+  const siblingness_counts = parents.map(function (index, elem) {
     const num_children = $(elem).children().length;
 
     if ($(elem).prop('tagName') == 'LI') {
@@ -60,17 +59,19 @@ function getFeedlikeAncestor(node) {
       return 0;
     }
 
-    const matching_siblings = $(elem).siblings().filter(function(index, sib) {
-      // Function returns true iff sibling has a class in common with the original.
-      const $sib = $(sib);
+    const matching_siblings = $(elem)
+      .siblings()
+      .filter(function (index, sib) {
+        // Function returns true iff sibling has a class in common with the original.
+        const $sib = $(sib);
 
-      if (sib.nodeType != Node.ELEMENT_NODE) {
-        return false;
-      }
-      const sibRect = sib.getBoundingClientRect();
+        if (sib.nodeType != Node.ELEMENT_NODE) {
+          return false;
+        }
+        const sibRect = sib.getBoundingClientRect();
 
-      return isSimilar(myRect, sibRect);
-    });
+        return isSimilar(myRect, sibRect);
+      });
     return Math.min(matching_siblings.length, min_feed_neighbors);
   });
 
@@ -97,9 +98,11 @@ function getFeedlikeAncestor(node) {
 function findMyId() {
   const iframes = parent.document.getElementsByTagName('iframe');
 
-  for (let i=0, len=iframes.length; i < len; ++i) {
-    if (document == iframes[i].contentDocument ||
-        self == iframes[i].contentWindow) {
+  for (let i = 0, len = iframes.length; i < len; ++i) {
+    if (
+      document == iframes[i].contentDocument ||
+      self == iframes[i].contentWindow
+    ) {
       return iframes[i].id;
     }
   }
@@ -132,13 +135,17 @@ function addNotification(elem, put_inside) {
     return;
   }
   const $positioner = $('<div/>').addClass('aqi-notification');
-  const $contents = $('<div/>').addClass('aqi-inside')
-      .css('max-width', $elem.width());
+  const $contents = $('<div/>')
+    .addClass('aqi-inside')
+    .css('max-width', $elem.width());
   const $arrow = $('<div/>').addClass('aqi-arrow');
-  const $arrow_wrapper = $('<div/>').addClass('aqi-arrow-wrapper').click(function() {
-    $elem.addClass('aqi-hide-exception');
-    $positioner.addClass('aqi-disabled');
-  }).append($arrow);
+  const $arrow_wrapper = $('<div/>')
+    .addClass('aqi-arrow-wrapper')
+    .click(function () {
+      $elem.addClass('aqi-hide-exception');
+      $positioner.addClass('aqi-disabled');
+    })
+    .append($arrow);
 
   $contents.append($arrow_wrapper);
   $positioner.append($contents);
@@ -152,7 +159,9 @@ function addNotification(elem, put_inside) {
 // Assembles a regex from stored blacklist
 async function makeRegex() {
   try {
-    const items = await chrome.storage.local.get(['blacklist'/* , "enabled"*/]);
+    const items = await chrome.storage.local.get([
+      'blacklist' /* , "enabled"*/,
+    ]);
     const bannedWords = items['blacklist'];
     return regexpFromWordList(Object.keys(bannedWords));
   } catch (err) {
@@ -171,7 +180,8 @@ function processTextNode(node, hide_completely, regex) {
       if (hide_completely) {
         ancestor.addClass('aqi-hide-completely');
       } else {
-        const put_inside = (getCanonicalHostname(window.location.host) == 'youtube.com');
+        const put_inside =
+          getCanonicalHostname(window.location.host) == 'youtube.com';
         addNotification(ancestor, put_inside);
         ancestor.addClass('aqi-hide');
         if (put_inside) {
@@ -188,20 +198,35 @@ let observer = null;
 
 function startObservingChanges(processCallback) {
   const targetNode = document.documentElement;
-  const config = {attributes: false, childList: true, characterData: true, subtree: true};
-  const callback = function(mutationsList, observer) {
+  const config = {
+    attributes: false,
+    childList: true,
+    characterData: true,
+    subtree: true,
+  };
+  const callback = function (mutationsList, observer) {
     for (const mutation of mutationsList) {
       if (mutation.type === 'characterData') {
         processCallback(mutation.target);
       } else if (mutation.type === 'childList') {
         for (const node of mutation.addedNodes) {
-          const walk=document.createTreeWalker(node, NodeFilter.SHOW_TEXT, null, false);
+          const walk = document.createTreeWalker(
+            node,
+            NodeFilter.SHOW_TEXT,
+            null,
+            false,
+          );
           while (walk.nextNode()) {
             processCallback(walk.currentNode);
           }
         }
       } else if (mutation.type === 'attributes') {
-        const walk=document.createTreeWalker(mutation.target, NodeFilter.SHOW_TEXT, null, false);
+        const walk = document.createTreeWalker(
+          mutation.target,
+          NodeFilter.SHOW_TEXT,
+          null,
+          false,
+        );
         while (walk.nextNode()) {
           processCallback(walk.currentNode);
         }
@@ -233,12 +258,17 @@ function render(enabled_everywhere, hide_completely, disable_site, regex) {
     return;
   }
 
-  const process = (node) => {
+  const process = node => {
     processTextNode(node, hide_completely, regex);
   };
   startObservingChanges(process);
 
-  const walk=document.createTreeWalker(document.documentElement, NodeFilter.SHOW_TEXT, null, false);
+  const walk = document.createTreeWalker(
+    document.documentElement,
+    NodeFilter.SHOW_TEXT,
+    null,
+    false,
+  );
   while (walk.nextNode()) {
     process(walk.currentNode);
   }
@@ -248,7 +278,7 @@ function render(enabled_everywhere, hide_completely, disable_site, regex) {
 async function restart() {
   // todo: Do it in one operation.
   try {
-    const items = await chrome.storage.local.get({'enabled': true});
+    const items = await chrome.storage.local.get({ enabled: true });
     const enabled_everywhere = items['enabled'];
     const hide_completely = await fetchStatusForHost('hide_completely');
     const disable_site = await fetchStatusForHost('disable_site');
@@ -261,7 +291,9 @@ async function restart() {
     if (my_id !== 'ignore') {
       // For now, only count number of blocked things in outermost div.
       if (!inIframe()) {
-        chrome.runtime.sendMessage({'count': $('.aqi-hide, .aqi-hide-completely').length});
+        chrome.runtime.sendMessage({
+          count: $('.aqi-hide, .aqi-hide-completely').length,
+        });
       }
     }
   } catch (err) {
@@ -270,7 +302,7 @@ async function restart() {
 }
 
 // When the blacklist changes the regex needs to be updated
-chrome.storage.onChanged.addListener(function(changes, namespace) {
+chrome.storage.onChanged.addListener(function (changes, namespace) {
   restart();
 });
 

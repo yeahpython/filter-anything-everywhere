@@ -9,63 +9,63 @@ export default [
     output: {
       file: 'build/extension/background_bundle.js',
       format: 'iife',
-      name: 'BackgroundBundle'
+      name: 'BackgroundBundle',
     },
     plugins: [
       eslint({
-        'fix': false
+        fix: false,
       }),
       nodeResolve(),
       commonjs(),
-      babel()
-    ]
+      babel(),
+    ],
   },
   {
     input: 'extension/browser_action.js',
     output: {
       file: 'build/extension/browser_action_bundle.js',
       format: 'iife',
-      name: 'BrowserActionBundle'
+      name: 'BrowserActionBundle',
     },
     plugins: [
       eslint({
-        'fix': false
+        fix: false,
       }),
       nodeResolve(),
       commonjs(),
-      babel()
-    ]
+      babel(),
+    ],
   },
   {
     input: 'extension/content.js',
     output: {
       file: 'build/extension/content_bundle.js',
       format: 'iife',
-      name: 'ContentBundle'
+      name: 'ContentBundle',
     },
     plugins: [
       eslint({
-        'fix': false
+        fix: false,
       }),
       nodeResolve(),
       commonjs(),
-      babel()
-    ]
+      babel(),
+    ],
   },
   {
     input: 'extension/options.js',
     output: {
       file: 'build/extension/options_bundle.js',
       format: 'iife',
-      name: 'OptionsBundle'
+      name: 'OptionsBundle',
     },
     plugins: [
       eslint({
-        'fix': false
+        fix: false,
       }),
       nodeResolve(),
       commonjs(),
-      babel()
-    ]
+      babel(),
+    ],
   },
 ];

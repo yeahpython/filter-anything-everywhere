@@ -1,6 +1,9 @@
 {
   "scripts": {
     "build": "./prepare_extension.sh",
+    "format": "prettier --write . --ignore-path .prettierignore",
+    "lint": "eslint . --ext .js",
+    "lint:fix": "eslint . --ext .js --fix",
     "test": "jasmine"
   },
   "devDependencies": {
@@ -10,12 +13,31 @@
     "@rollup/plugin-node-resolve": "^15.0.1",
     "eslint": "^8.36.0",
     "eslint-config-google": "^0.14.0",
+    "husky": "^8.0.3",
     "jasmine": "^4.6.0",
+    "lint-staged": "^13.2.0",
+    "prettier": "^2.8.7",
     "rollup": "^3.20.1",
     "rollup-plugin-commonjs": "^10.1.0"
   },
   "dependencies": {
     "jquery": "^3.6.4"
+  },
+  "husky": {
+    "hooks": {
+      "pre-commit": "lint-staged"
+    }
+  },
+  "lint-staged": {
+    "*.js": [
+      "npm run lint:fix",
+      "git add"
+    ],
+    "*.{json,md,html,css}": [
+      "npm run format",
+      "git add"
+    ],
+    "build/**/*": "ignore"
   },
   "type": "module"
 }

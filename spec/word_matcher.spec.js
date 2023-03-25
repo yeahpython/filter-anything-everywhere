@@ -1,7 +1,7 @@
-import { regexpFromWordList } from '../extension/word_matcher.js'
+import { regexpFromWordList } from '../extension/word_matcher.js';
 
 describe('regexpFromWordList', () => {
-  describe('with [\'bob\']', () => {
+  describe("with ['bob']", () => {
     const re = regexpFromWordList(['bob']);
     it('should match original word', () => {
       expect(re.test('bob')).toBe(true);
@@ -34,7 +34,7 @@ describe('regexpFromWordList', () => {
       expect(re.test('thingamabob')).toBe(false);
     });
   });
-  describe('with asterisk [\'a*c\']', () => {
+  describe("with asterisk ['a*c']", () => {
     const re = regexpFromWordList(['a*c']);
     it('should allow zero letter substitution', () => {
       expect(re.test('ac')).toBe(true);
@@ -46,7 +46,7 @@ describe('regexpFromWordList', () => {
       expect(re.test('abbc')).toBe(true);
     });
   });
-  describe('with wildcard [\'a?c\']', () => {
+  describe("with wildcard ['a?c']", () => {
     const re = regexpFromWordList(['a?c']);
     it('should allow single letter substitution', () => {
       expect(re.test('abc')).toBe(true);
@@ -58,25 +58,25 @@ describe('regexpFromWordList', () => {
       expect(re.test('ac')).toBe(false);
     });
   });
-  describe('with Chinese [\'你好\']', () => {
+  describe("with Chinese ['你好']", () => {
     const re = regexpFromWordList(['你好']);
     it('should not require word boundaries', () => {
       expect(re.test('你好吗')).toBe(true);
     });
   });
-  describe('with Chinese wildcard [\'你?吗\']', () => {
+  describe("with Chinese wildcard ['你?吗']", () => {
     const re = regexpFromWordList(['你?吗']);
     it('should allow single character substitution', () => {
       expect(re.test('你好吗')).toBe(true);
     });
   });
-  describe('with Japanese [\'です\']', () => {
+  describe("with Japanese ['です']", () => {
     const re = regexpFromWordList(['です']);
     it('should not require word boundaries', () => {
       expect(re.test('私はアマンダです。')).toBe(true);
     });
   });
-  describe('with Bulgarian [\'учител\']', () => {
+  describe("with Bulgarian ['учител']", () => {
     const re = regexpFromWordList(['учител']);
     it('should match the complete word', () => {
       expect(re.test('Аз съм учител.')).toBe(true);
@@ -84,11 +84,11 @@ describe('regexpFromWordList', () => {
     it('should match the capitalized version', () => {
       expect(re.test('Аз съм Учител.')).toBe(true);
     });
-    it('should not match fragments of words such as \'учителище\'', () => {
+    it("should not match fragments of words such as 'учителище'", () => {
       expect(re.test('учителище')).toBe(false);
     });
   });
-  describe('with parenthesized terms [\'(sic)\']', () => {
+  describe("with parenthesized terms ['(sic)']", () => {
     const re = regexpFromWordList(['(sic)']);
     it('should match normally when surrounded by spaces', () => {
       expect(re.test('He like (sic) burgers')).toBe(true);

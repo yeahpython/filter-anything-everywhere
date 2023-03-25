@@ -1,117 +1,121 @@
 <!DOCTYPE html>
 <html>
-<head>
-<style>
-ul {
-  margin-left: 19px;
-  margin-bottom:0px;
-  margin-top:0px;
-  padding: 0px;
-}
-li {
-  padding-left:4px;
-}
-#triggers li:hover {
-  list-style-image: url("images/cross.png");
-  cursor: pointer;
-  color: red;
-}
-#triggers {
-  margin-top:-5px;
-}
-#container{
-  min-height:210px;
-  min-width:250px;
-  margin:10px;
-  overflow-y:auto;
-}
-#list{
-  display:none;
-  margin-top:10px;
-  margin-bottom:10px;
-}
-#input_lead{
-  padding-left:0px;
-}
-#toggle, #temp_toggle {
-  display:none;
-  top:5px;
-  right:5px;
-  position:absolute;
-  height:calc(100% - 10px);
-  width:25px;
-}
-#input{
-  margin:0px;
-  margin-bottom:5px;
-  border-top:none;
-  border-right:none;
-  border-left:none;
-}
+  <head>
+    <style>
+      ul {
+        margin-left: 19px;
+        margin-bottom: 0px;
+        margin-top: 0px;
+        padding: 0px;
+      }
+      li {
+        padding-left: 4px;
+      }
+      #triggers li:hover {
+        list-style-image: url('images/cross.png');
+        cursor: pointer;
+        color: red;
+      }
+      #triggers {
+        margin-top: -5px;
+      }
+      #container {
+        min-height: 210px;
+        min-width: 250px;
+        margin: 10px;
+        overflow-y: auto;
+      }
+      #list {
+        display: none;
+        margin-top: 10px;
+        margin-bottom: 10px;
+      }
+      #input_lead {
+        padding-left: 0px;
+      }
+      #toggle,
+      #temp_toggle {
+        display: none;
+        top: 5px;
+        right: 5px;
+        position: absolute;
+        height: calc(100% - 10px);
+        width: 25px;
+      }
+      #input {
+        margin: 0px;
+        margin-bottom: 5px;
+        border-top: none;
+        border-right: none;
+        border-left: none;
+      }
 
-body {
-  margin: 0;
-}
+      body {
+        margin: 0;
+      }
 
-#input:focus {
-  outline:none;
-}
+      #input:focus {
+        outline: none;
+      }
 
-#display_site_label {
-  display:inline !important;
-}
+      #display_site_label {
+        display: inline !important;
+      }
 
-#disable_site input[type=checkbox] {
-  display:none;
-}
+      #disable_site input[type='checkbox'] {
+        display: none;
+      }
 
-#hide_completely input[type=checkbox] {
-  display:none;
-}
+      #hide_completely input[type='checkbox'] {
+        display: none;
+      }
 
-#bottom-bar {
-  display:block;
-  background-color:#eee;
-  padding:10px;
-}
+      #bottom-bar {
+        display: block;
+        background-color: #eee;
+        padding: 10px;
+      }
 
-#options, #feedback{
-  cursor:pointer;
-  display:inline;
-  margin-right:10px;
-  font-size:8pt;
-}
+      #options,
+      #feedback {
+        cursor: pointer;
+        display: inline;
+        margin-right: 10px;
+        font-size: 8pt;
+      }
 
-#header {
-  background-color:#6a7889;
-  padding:10px;
-  color:white;
-  position:relative;
-}
-
-</style>
-</head>
-<body>
-<div id = "header"> Filter Anything Everywhere <button id = "toggle"></button></div>
-<div id = "container">
-  <div id = "disable_site">
-    <input type = "checkbox">
-    <div id = "disable_site_label" style="display:inline"></div>
-  </div>
-  <div id = "hide_completely">
-    <input type = "checkbox">
-    <div id = "hide_completely_label" style="display:inline"></div>
-  </div>
-  <div id = "status">Loading...</div>
-  <div id = "list">
-    Blacklist:<br>
-    <li><input id = "input" placeholder="Add word"></li>
-    <div id = "triggers"></div>
-  </div>
-</div>
-<div id = "bottom-bar">
-<div id = "options">Options</div>
-<div id = "feedback">Feedback</div>
-  <script type = "text/javascript" src = "browser_action_bundle.js"></script>
-</body>
+      #header {
+        background-color: #6a7889;
+        padding: 10px;
+        color: white;
+        position: relative;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="header">
+      Filter Anything Everywhere <button id="toggle"></button>
+    </div>
+    <div id="container">
+      <div id="disable_site">
+        <input type="checkbox" />
+        <div id="disable_site_label" style="display: inline"></div>
+      </div>
+      <div id="hide_completely">
+        <input type="checkbox" />
+        <div id="hide_completely_label" style="display: inline"></div>
+      </div>
+      <div id="status">Loading...</div>
+      <div id="list">
+        Blacklist:<br />
+        <li><input id="input" placeholder="Add word" /></li>
+        <div id="triggers"></div>
+      </div>
+    </div>
+    <div id="bottom-bar">
+      <div id="options">Options</div>
+      <div id="feedback">Feedback</div>
+    </div>
+    <script type="text/javascript" src="browser_action_bundle.js"></script>
+  </body>
 </html>
