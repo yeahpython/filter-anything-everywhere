@@ -1,43 +1,43 @@
-import { getCanonicalHostname } from "./hostname.js";
+import {getCanonicalHostname} from './hostname.js';
 
 // Saves options to chrome.storage.local.
 function save_options() {
-  var hide_completely_string = document.getElementById('hide_completely').value;
-  var hide_completely_strings = hide_completely_string.split('\n');
-  var hide_completely = {};
+  const hide_completely_string = document.getElementById('hide_completely').value;
+  const hide_completely_strings = hide_completely_string.split('\n');
+  const hide_completely = {};
   hide_completely_strings.forEach(function(element) {
     if (element) {
-      hide_completely[getCanonicalHostname(element)] = true
+      hide_completely[getCanonicalHostname(element)] = true;
     }
   });
 
-  var blacklist_string = document.getElementById('blacklist').value;
-  var blacklist_strings = blacklist_string.split('\n');
-  var blacklist = {};
+  const blacklist_string = document.getElementById('blacklist').value;
+  const blacklist_strings = blacklist_string.split('\n');
+  const blacklist = {};
   blacklist_strings.forEach(function(element) {
     if (element) {
-      blacklist[element] = true
+      blacklist[element] = true;
     }
   });
 
-  var disable_site_string = document.getElementById('disable_site').value;
-  var disable_site_strings = disable_site_string.split('\n');
-  var disable_site = {};
+  const disable_site_string = document.getElementById('disable_site').value;
+  const disable_site_strings = disable_site_string.split('\n');
+  const disable_site = {};
   disable_site_strings.forEach(function(element) {
     if (element) {
-      disable_site[getCanonicalHostname(element)] = true
+      disable_site[getCanonicalHostname(element)] = true;
     }
   });
 
-  var enabled = document.getElementById('enabled').checked;
+  const enabled = document.getElementById('enabled').checked;
   chrome.storage.local.set({
     hide_completely: hide_completely,
     blacklist: blacklist,
     disable_site: disable_site,
-    enabled: enabled
+    enabled: enabled,
   }, function() {
     // Update status to let user know options were saved.
-    var status = document.getElementById('status');
+    const status = document.getElementById('status');
     status.textContent = 'Options saved.';
     setTimeout(function() {
       status.textContent = '';
@@ -54,8 +54,8 @@ function restore_options() {
     disable_site: {},
     enabled: true,
   }, function(items) {
-    var hide_completely = items["hide_completely"]
-    var hide_completely_array = []
+    const hide_completely = items['hide_completely'];
+    const hide_completely_array = [];
     for (const key in hide_completely) {
       if (hide_completely[key] === true) {
         hide_completely_array.push(key);
@@ -64,8 +64,8 @@ function restore_options() {
     document.getElementById('hide_completely').value = hide_completely_array.join('\n');
 
 
-    var blacklist = items["blacklist"]
-    var blacklist_array = []
+    const blacklist = items['blacklist'];
+    const blacklist_array = [];
     for (const key in blacklist) {
       if (blacklist[key] === true) {
         blacklist_array.push(key);
@@ -73,8 +73,8 @@ function restore_options() {
     }
     document.getElementById('blacklist').value = blacklist_array.join('\n');
 
-    var disable_site = items["disable_site"]
-    var disable_site_array = []
+    const disable_site = items['disable_site'];
+    const disable_site_array = [];
     for (const key in disable_site) {
       if (disable_site[key] === true) {
         disable_site_array.push(key);

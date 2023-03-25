@@ -1,6 +1,7 @@
 import { nodeResolve } from '@rollup/plugin-node-resolve';
 import commonjs from '@rollup/plugin-commonjs';
 import { babel } from '@rollup/plugin-babel';
+import eslint from '@rollup/plugin-eslint';
 
 export default [
   {
@@ -11,6 +12,9 @@ export default [
       name: 'BackgroundBundle'
     },
     plugins: [
+      eslint({
+        'fix': false
+      }),
       nodeResolve(),
       commonjs(),
       babel()
@@ -24,6 +28,9 @@ export default [
       name: 'BrowserActionBundle'
     },
     plugins: [
+      eslint({
+        'fix': false
+      }),
       nodeResolve(),
       commonjs(),
       babel()
@@ -37,6 +44,9 @@ export default [
       name: 'ContentBundle'
     },
     plugins: [
+      eslint({
+        'fix': false
+      }),
       nodeResolve(),
       commonjs(),
       babel()
@@ -50,6 +60,9 @@ export default [
       name: 'OptionsBundle'
     },
     plugins: [
+      eslint({
+        'fix': false
+      }),
       nodeResolve(),
       commonjs(),
       babel()

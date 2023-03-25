@@ -6,7 +6,10 @@
   "devDependencies": {
     "@rollup/plugin-babel": "^6.0.3",
     "@rollup/plugin-commonjs": "^24.0.1",
+    "@rollup/plugin-eslint": "^9.0.3",
     "@rollup/plugin-node-resolve": "^15.0.1",
+    "eslint": "^8.36.0",
+    "eslint-config-google": "^0.14.0",
     "jasmine": "^4.6.0",
     "rollup": "^3.20.1",
     "rollup-plugin-commonjs": "^10.1.0"

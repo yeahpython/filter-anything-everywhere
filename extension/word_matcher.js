@@ -1,12 +1,12 @@
 // Escape bad characters from user input, but allow wildcards.
 function escapeRegExp(str) {
-  return str.replace(/[\-\[\]\/\{\}\(\)\+\.\\\^\$\|]/g, "\\$&")
-            .replace(/\*/g, "[^\\s]*")
-            .replace(/\?/g, "[^\\s]");
+  return str.replace(/[\-\[\]\/\{\}\(\)\+\.\\\^\$\|]/g, '\\$&')
+      .replace(/\*/g, '[^\\s]*')
+      .replace(/\?/g, '[^\\s]');
 }
 
 export function regexpFromWordList(bannedWords) {
-  var escapedBannedWords = bannedWords.map((word) => {
+  const escapedBannedWords = bannedWords.map((word) => {
     let result = escapeRegExp(word);
 
     // Require word boundaries next to letters except in languages that don't
@@ -17,18 +17,18 @@ export function regexpFromWordList(bannedWords) {
     const lastChar = word.slice(-1);
     const firstChar = word.slice(0, 1);
     if (lastChar.match(/\p{Letter}/u) && !lastChar.match(letterInLanguageWithoutSpacesRegexp)) {
-      result = result + "(?!\\p{Letter})";
+      result = result + '(?!\\p{Letter})';
     }
     if (firstChar.match(/\p{Letter}/u) && !firstChar.match(letterInLanguageWithoutSpacesRegexp)) {
-      result = "(?<!\\p{Letter})" + result;
+      result = '(?<!\\p{Letter})' + result;
     }
     return result;
   });
-  var regexString = escapedBannedWords.join("|");
+  let regexString = escapedBannedWords.join('|');
 
-  if (regexString == "") {
+  if (regexString == '') {
     // Rejects everything
-    regexString = "[^\\w\\W]";
+    regexString = '[^\\w\\W]';
   }
-  return new RegExp(regexString, "iu");
+  return new RegExp(regexString, 'iu');
 }
