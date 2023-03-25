@@ -96,6 +96,29 @@ function showErrorRefreshRequired() {
     .show();
 }
 
+function showSiteToggle(canonical_hostname, hostname_disabled) {
+  $('#disable_site')
+    .find('#disable_site_label')
+    .html('Filter ' + canonical_hostname)
+    .show()
+    .end()
+    .find('input[type=checkbox]')
+    .prop('checked', !hostname_disabled)
+    .click(async () => {
+      const items = await chrome.storage.local.get({disable_site: {}});
+      const disable_site = items['disable_site'];
+      if (hostname_disabled) {
+        delete disable_site[canonical_hostname];
+      } else {
+        disable_site[canonical_hostname] = true;
+      }
+      await chrome.storage.local.set({disable_site: disable_site});
+    })
+    .show()
+    .end()
+    .show();
+}
+
 function hidePageSettings() {
   $('#list').hide();
   $('#status').hide();
@@ -187,26 +210,7 @@ async function rerender() {
   const canonical_hostname = getCanonicalHostname(tab_url.hostname);
   const hostname_disabled =
           items['disable_site'][canonical_hostname] === true;
-  $('#disable_site')
-    .find('#disable_site_label')
-    .html('Filter ' + canonical_hostname)
-    .show()
-    .end()
-    .find('input[type=checkbox]')
-    .prop('checked', !hostname_disabled)
-    .click(async () => {
-      const items = await chrome.storage.local.get({disable_site: {}});
-      const disable_site = items['disable_site'];
-      if (hostname_disabled) {
-        delete disable_site[canonical_hostname];
-      } else {
-        disable_site[canonical_hostname] = true;
-      }
-      await chrome.storage.local.set({disable_site: disable_site});
-    })
-    .show()
-    .end()
-    .show();
+  showSiteToggle(canonical_hostname, hostname_disabled);
   if (hostname_disabled) {
     hidePageSettings();
     return;
