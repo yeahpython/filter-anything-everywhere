@@ -72,17 +72,7 @@ function showFilteringPaused() {
   $('#status').text('Filter Anything Everywhere is paused.').show();
 }
 
-function showErrorNotAllowed() {
-  $('#disable_site input[type=checkbox]').hide();
-  $('#disable_site_label').hide();
-  $('#disable_site').show();
-  $('#hide_completely').hide();
-  $('#list').hide();
-  $('#toggle').hide();
-  $('#status').text('Extensions aren\'t allowed on this page.').show();
-}
-
-function showErrorRefreshRequired() {
+function showError(msg) {
   $('#disable_site input[type=checkbox]').hide();
   $('#disable_site_label').hide();
   $('#disable_site').show();
@@ -90,9 +80,7 @@ function showErrorRefreshRequired() {
   $('#list').hide();
   $('#toggle').hide();
   $('#status')
-    .text(
-      'Looks like a new installation. To start filtering, refresh the page.',
-    )
+    .text(msg)
     .show();
 }
 
@@ -195,12 +183,12 @@ async function rerender() {
       errorMsg == 'Cannot access a chrome:// URL' ||
             injection_results == undefined
     ) {
-      showErrorNotAllowed();
+      showError('Extensions aren\'t allowed on this page.');
       return;
     }
   }
   if (!injection_results[0].result) {
-    showErrorRefreshRequired();
+    showError('Looks like a new installation. To start filtering, refresh the page.');
     return;
   }
 
