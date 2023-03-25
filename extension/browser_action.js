@@ -96,6 +96,12 @@ function showErrorRefreshRequired() {
     .show();
 }
 
+function hidePageSettings() {
+  $('#list').hide();
+  $('#status').hide();
+  $('#hide_completely').hide();
+}
+
 function showPageSettings(items, canonical_hostname) {
   const hostname_hide_completely =
           items['hide_completely'][canonical_hostname] === true;
@@ -202,9 +208,7 @@ async function rerender() {
     .end()
     .show();
   if (hostname_disabled) {
-    $('#list').hide();
-    $('#status').hide();
-    $('#hide_completely').hide();
+    hidePageSettings();
     return;
   }
   if (!hostname_disabled) {
