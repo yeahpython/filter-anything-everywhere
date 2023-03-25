@@ -66,6 +66,30 @@ $('#triggers').click(async (e) => {
   }
 });
 
+function showErrorNotAllowed() {
+  $('#disable_site input[type=checkbox]').hide();
+  $('#disable_site_label').hide();
+  $('#disable_site').show();
+  $('#hide_completely').hide();
+  $('#list').hide();
+  $('#toggle').hide();
+  $('#status').text('Extensions aren\'t allowed on this page.').show();
+}
+
+function showErrorRefreshRequired() {
+  $('#disable_site input[type=checkbox]').hide();
+  $('#disable_site_label').hide();
+  $('#disable_site').show();
+  $('#hide_completely').hide();
+  $('#list').hide();
+  $('#toggle').hide();
+  $('#status')
+    .text(
+      'Looks like a new installation. To start filtering, refresh the page.',
+    )
+    .show();
+}
+
 // Shows a list of words generated from the blacklist.
 async function rerender() {
   const list = $('<ul/>');
@@ -101,28 +125,12 @@ async function rerender() {
       errorMsg == 'Cannot access a chrome:// URL' ||
             injection_results == undefined
     ) {
-      $('#disable_site input[type=checkbox]').hide();
-      $('#disable_site_label').hide();
-      $('#disable_site').show();
-      $('#hide_completely').hide();
-      $('#list').hide();
-      $('#toggle').hide();
-      $('#status').text('Extensions aren\'t allowed on this page.').show();
+      showErrorNotAllowed();
       return;
     }
   }
   if (!injection_results[0].result) {
-    $('#disable_site input[type=checkbox]').hide();
-    $('#disable_site_label').hide();
-    $('#disable_site').show();
-    $('#hide_completely').hide();
-    $('#list').hide();
-    $('#toggle').hide();
-    $('#status')
-      .text(
-        'Looks like a new installation. To start filtering, refresh the page.',
-      )
-      .show();
+    showErrorRefreshRequired();
     return;
   }
 
