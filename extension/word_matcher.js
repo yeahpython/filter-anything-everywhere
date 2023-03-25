@@ -7,7 +7,7 @@ function escapeRegExp(str) {
 }
 
 export function regexpFromWordList(bannedWords) {
-  const escapedBannedWords = bannedWords.map(word => {
+  const escapedBannedWords = bannedWords.map((word) => {
     let result = escapeRegExp(word);
 
     // Require word boundaries next to letters except in languages that don't

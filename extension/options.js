@@ -1,4 +1,4 @@
-import { getCanonicalHostname } from './hostname.js';
+import {getCanonicalHostname} from './hostname.js';
 
 // Saves options to chrome.storage.local.
 function save_options() {
@@ -6,7 +6,7 @@ function save_options() {
     document.getElementById('hide_completely').value;
   const hide_completely_strings = hide_completely_string.split('\n');
   const hide_completely = {};
-  hide_completely_strings.forEach(function (element) {
+  hide_completely_strings.forEach(function(element) {
     if (element) {
       hide_completely[getCanonicalHostname(element)] = true;
     }
@@ -15,7 +15,7 @@ function save_options() {
   const blacklist_string = document.getElementById('blacklist').value;
   const blacklist_strings = blacklist_string.split('\n');
   const blacklist = {};
-  blacklist_strings.forEach(function (element) {
+  blacklist_strings.forEach(function(element) {
     if (element) {
       blacklist[element] = true;
     }
@@ -24,7 +24,7 @@ function save_options() {
   const disable_site_string = document.getElementById('disable_site').value;
   const disable_site_strings = disable_site_string.split('\n');
   const disable_site = {};
-  disable_site_strings.forEach(function (element) {
+  disable_site_strings.forEach(function(element) {
     if (element) {
       disable_site[getCanonicalHostname(element)] = true;
     }
@@ -38,11 +38,11 @@ function save_options() {
       disable_site: disable_site,
       enabled: enabled,
     },
-    function () {
+    function() {
       // Update status to let user know options were saved.
       const status = document.getElementById('status');
       status.textContent = 'Options saved.';
-      setTimeout(function () {
+      setTimeout(function() {
         status.textContent = '';
       }, 750);
     },
@@ -59,7 +59,7 @@ function restore_options() {
       disable_site: {},
       enabled: true,
     },
-    function (items) {
+    function(items) {
       const hide_completely = items['hide_completely'];
       const hide_completely_array = [];
       for (const key in hide_completely) {

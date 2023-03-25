@@ -1,6 +1,6 @@
 import $ from 'jquery';
-import { getCanonicalHostname } from './hostname.js';
-import { regexpFromWordList } from './word_matcher.js';
+import {getCanonicalHostname} from './hostname.js';
+import {regexpFromWordList} from './word_matcher.js';
 
 window.hasAqi = true;
 
@@ -37,7 +37,7 @@ function isSimilar(my_rect, sib_rect) {
 function getFeedlikeAncestor(node) {
   // parents ordered by document order
   const parents = $(node).add($(node).parents());
-  const siblingness_counts = parents.map(function (index, elem) {
+  const siblingness_counts = parents.map(function(index, elem) {
     const num_children = $(elem).children().length;
 
     if ($(elem).prop('tagName') == 'LI') {
@@ -61,7 +61,7 @@ function getFeedlikeAncestor(node) {
 
     const matching_siblings = $(elem)
       .siblings()
-      .filter(function (index, sib) {
+      .filter(function(index, sib) {
         // Function returns true iff sibling has a class in common with the original.
         const $sib = $(sib);
 
@@ -141,7 +141,7 @@ function addNotification(elem, put_inside) {
   const $arrow = $('<div/>').addClass('aqi-arrow');
   const $arrow_wrapper = $('<div/>')
     .addClass('aqi-arrow-wrapper')
-    .click(function () {
+    .click(function() {
       $elem.addClass('aqi-hide-exception');
       $positioner.addClass('aqi-disabled');
     })
@@ -204,7 +204,7 @@ function startObservingChanges(processCallback) {
     characterData: true,
     subtree: true,
   };
-  const callback = function (mutationsList, observer) {
+  const callback = function(mutationsList, observer) {
     for (const mutation of mutationsList) {
       if (mutation.type === 'characterData') {
         processCallback(mutation.target);
@@ -258,7 +258,7 @@ function render(enabled_everywhere, hide_completely, disable_site, regex) {
     return;
   }
 
-  const process = node => {
+  const process = (node) => {
     processTextNode(node, hide_completely, regex);
   };
   startObservingChanges(process);
@@ -278,7 +278,7 @@ function render(enabled_everywhere, hide_completely, disable_site, regex) {
 async function restart() {
   // todo: Do it in one operation.
   try {
-    const items = await chrome.storage.local.get({ enabled: true });
+    const items = await chrome.storage.local.get({enabled: true});
     const enabled_everywhere = items['enabled'];
     const hide_completely = await fetchStatusForHost('hide_completely');
     const disable_site = await fetchStatusForHost('disable_site');
@@ -302,7 +302,7 @@ async function restart() {
 }
 
 // When the blacklist changes the regex needs to be updated
-chrome.storage.onChanged.addListener(function (changes, namespace) {
+chrome.storage.onChanged.addListener(function(changes, namespace) {
   restart();
 });
 

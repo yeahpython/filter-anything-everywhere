@@ -1,5 +1,5 @@
 import $ from 'jquery';
-import { getCanonicalHostname } from './hostname.js';
+import {getCanonicalHostname} from './hostname.js';
 
 const input = document.getElementById('input');
 
@@ -10,7 +10,7 @@ function addWord() {
     return;
   }
   // Get the stored blacklist
-  chrome.storage.local.get('blacklist', function (items) {
+  chrome.storage.local.get('blacklist', function(items) {
     let blacklist = items['blacklist'];
     // Add word to our copy of the blacklist
     if (blacklist === undefined) {
@@ -18,27 +18,27 @@ function addWord() {
     }
     blacklist[word] = true;
     // Set the blacklist with our modified copy
-    chrome.storage.local.set({ blacklist: blacklist }, function () {
+    chrome.storage.local.set({blacklist: blacklist}, function() {
       rerender();
       input.value = '';
     });
   });
 }
 
-$('#toggle').click(function () {
-  chrome.storage.local.get({ enabled: true }, function (items) {
-    chrome.storage.local.set({ enabled: !items['enabled'] }, rerender);
+$('#toggle').click(function() {
+  chrome.storage.local.get({enabled: true}, function(items) {
+    chrome.storage.local.set({enabled: !items['enabled']}, rerender);
   });
 });
 
 // Add the word to the blacklist when the user presses enter
-$('#input').keyup(function (e) {
+$('#input').keyup(function(e) {
   if (e.keyCode == 13) {
     addWord();
   }
 });
 
-$('#options').click(function () {
+$('#options').click(function() {
   if (chrome.runtime.openOptionsPage) {
     // New way to open options pages, if supported (Chrome 42+).
     chrome.runtime.openOptionsPage();
@@ -48,19 +48,19 @@ $('#options').click(function () {
   }
 });
 
-$('#feedback').click(function () {
+$('#feedback').click(function() {
   window.open('https://goo.gl/forms/YTaZXZA0IFys1v6y2');
 });
 
 // Remove any word in the blacklist that is clicked from the storage
-$('#triggers').click(function (e) {
+$('#triggers').click(function(e) {
   if ($(event.target).is('li')) {
     const word = event.target.innerHTML;
-    chrome.storage.local.get('blacklist', function (items) {
+    chrome.storage.local.get('blacklist', function(items) {
       const blacklist = items['blacklist'];
       if (blacklist) {
         delete blacklist[word];
-        chrome.storage.local.set({ blacklist: blacklist }, function () {
+        chrome.storage.local.set({blacklist: blacklist}, function() {
           rerender();
         });
       }
@@ -72,8 +72,8 @@ $('#triggers').click(function (e) {
 function rerender() {
   const list = $('<ul/>');
   chrome.storage.local.get(
-    { blacklist: {}, enabled: true, hide_completely: {}, disable_site: {} },
-    async function (items) {
+    {blacklist: {}, enabled: true, hide_completely: {}, disable_site: {}},
+    async function(items) {
       if (items['enabled'] === false) {
         $('#toggle').html('&#9658;').addClass('resume').show();
         $('#list').hide();
@@ -89,13 +89,13 @@ function rerender() {
       });
 
       const injection = {
-        target: { tabId: tab.id },
+        target: {tabId: tab.id},
         func: () => {
           return window.hasAqi;
         },
       };
 
-      chrome.scripting.executeScript(injection, function (injection_results) {
+      chrome.scripting.executeScript(injection, function(injection_results) {
         console.log('injection_results', injection_results);
 
         if (chrome.runtime.lastError) {
@@ -110,7 +110,7 @@ function rerender() {
             $('#hide_completely').hide();
             $('#list').hide();
             $('#toggle').hide();
-            $('#status').text("Extensions aren't allowed on this page.").show();
+            $('#status').text('Extensions aren\'t allowed on this page.').show();
             return;
           }
         }
@@ -141,15 +141,15 @@ function rerender() {
           .end()
           .find('input[type=checkbox]')
           .prop('checked', !hostname_disabled)
-          .click(function () {
-            chrome.storage.local.get({ disable_site: {} }, function (items) {
+          .click(function() {
+            chrome.storage.local.get({disable_site: {}}, function(items) {
               const disable_site = items['disable_site'];
               if (hostname_disabled) {
                 delete disable_site[canonical_hostname];
               } else {
                 disable_site[canonical_hostname] = true;
               }
-              chrome.storage.local.set({ disable_site: disable_site });
+              chrome.storage.local.set({disable_site: disable_site});
             });
           })
           .show()
@@ -176,10 +176,10 @@ function rerender() {
             .end()
             .find('input[type=checkbox]')
             .prop('checked', !hostname_hide_completely)
-            .click(function () {
+            .click(function() {
               chrome.storage.local.get(
-                { hide_completely: {} },
-                function (items) {
+                {hide_completely: {}},
+                function(items) {
                   const hide_completely = items['hide_completely'];
                   if (hostname_hide_completely) {
                     delete hide_completely[canonical_hostname];
@@ -199,7 +199,7 @@ function rerender() {
           $('#list').show();
           // only render list if it is enabled
           if (items['blacklist'] && items['blacklist'].length !== 0) {
-            $.each(items['blacklist'], function (currentValue, trueOrFalse) {
+            $.each(items['blacklist'], function(currentValue, trueOrFalse) {
               $('<li/>').html(currentValue).appendTo(list);
             });
             $('#triggers').html(list);
@@ -215,6 +215,6 @@ function rerender() {
 // Initial render
 rerender();
 
-chrome.storage.onChanged.addListener(function (changes, namespace) {
+chrome.storage.onChanged.addListener(function(changes, namespace) {
   rerender();
 });
