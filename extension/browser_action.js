@@ -160,11 +160,7 @@ async function rerender() {
   if (!hostname_disabled) {
     const hostname_hide_completely =
             items['hide_completely'][canonical_hostname] === true;
-    if (hostname_hide_completely) {
-      $('#status').hide();
-    } else {
-      $('#status').hide();
-    }
+    $('#status').hide();
     $('#hide_completely')
       .find('#hide_completely_label')
       .html('Indicate filtered content on this site')
