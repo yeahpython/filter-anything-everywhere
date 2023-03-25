@@ -170,7 +170,6 @@ function showPageSettings(items, canonical_hostname) {
 async function rerender() {
   const items = await chrome.storage.local.get(
     {blacklist: {}, enabled: true, hide_completely: {}, disable_site: {}});
-    // async function(items)  {
   if (items['enabled'] === false) {
     showFilteringPaused();
     return;
