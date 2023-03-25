@@ -66,6 +66,14 @@ $('#triggers').click(async (e) => {
   }
 });
 
+function showFilteringPaused() {
+  $('#toggle').html('&#9658;').addClass('resume').show();
+  $('#list').hide();
+  $('#disable_site').hide();
+  $('#hide_completely').hide();
+  $('#status').text('Filter Anything Everywhere is paused.').show();
+}
+
 function showErrorNotAllowed() {
   $('#disable_site input[type=checkbox]').hide();
   $('#disable_site_label').hide();
@@ -97,11 +105,7 @@ async function rerender() {
     {blacklist: {}, enabled: true, hide_completely: {}, disable_site: {}});
     // async function(items)  {
   if (items['enabled'] === false) {
-    $('#toggle').html('&#9658;').addClass('resume').show();
-    $('#list').hide();
-    $('#disable_site').hide();
-    $('#hide_completely').hide();
-    $('#status').text('Filter Anything Everywhere is paused.').show();
+    showFilteringPaused();
     return;
   }
 
