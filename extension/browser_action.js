@@ -174,18 +174,12 @@ async function rerender() {
       return window.hasAqi;
     },
   };
-
-  const injection_results = await chrome.scripting.executeScript(injection);
-
-  if (chrome.runtime.lastError) {
-    const errorMsg = chrome.runtime.lastError.message;
-    if (
-      errorMsg == 'Cannot access a chrome:// URL' ||
-            injection_results == undefined
-    ) {
-      showError('Extensions aren\'t allowed on this page.');
-      return;
-    }
+  let injection_results = null;
+  try {
+    injection_results = await chrome.scripting.executeScript(injection);
+  } catch (e) {
+    showError('Extensions aren\'t allowed on this page.');
+    throw (e);
   }
   if (!injection_results[0].result) {
     showError('Looks like a new installation. To start filtering, refresh the page.');
