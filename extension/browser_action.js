@@ -140,16 +140,15 @@ async function rerender() {
     .end()
     .find('input[type=checkbox]')
     .prop('checked', !hostname_disabled)
-    .click(function() {
-      chrome.storage.local.get({disable_site: {}}, function(items) {
-        const disable_site = items['disable_site'];
-        if (hostname_disabled) {
-          delete disable_site[canonical_hostname];
-        } else {
-          disable_site[canonical_hostname] = true;
-        }
-        chrome.storage.local.set({disable_site: disable_site});
-      });
+    .click(async () => {
+      const items = await chrome.storage.local.get({disable_site: {}});
+      const disable_site = items['disable_site'];
+      if (hostname_disabled) {
+        delete disable_site[canonical_hostname];
+      } else {
+        disable_site[canonical_hostname] = true;
+      }
+      await chrome.storage.local.set({disable_site: disable_site});
     })
     .show()
     .end()
@@ -206,8 +205,6 @@ async function rerender() {
       $('#triggers').html('blacklist is empty');
     }
   }
-  // },
-  // );
 }
 
 // Initial render
