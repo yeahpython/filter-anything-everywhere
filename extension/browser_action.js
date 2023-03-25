@@ -53,18 +53,16 @@ $('#feedback').click(function() {
 });
 
 // Remove any word in the blacklist that is clicked from the storage
-$('#triggers').click(function(e) {
+$('#triggers').click(async (e) => {
   if ($(event.target).is('li')) {
     const word = event.target.innerHTML;
-    chrome.storage.local.get('blacklist', function(items) {
-      const blacklist = items['blacklist'];
-      if (blacklist) {
-        delete blacklist[word];
-        chrome.storage.local.set({blacklist: blacklist}, function() {
-          rerender();
-        });
-      }
-    });
+    const items = await chrome.storage.local.get('blacklist');
+    const blacklist = items['blacklist'];
+    if (blacklist) {
+      delete blacklist[word];
+      await chrome.storage.local.set({blacklist: blacklist});
+      await rerender();
+    }
   }
 });
 
