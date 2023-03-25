@@ -174,21 +174,18 @@ async function rerender() {
       .end()
       .find('input[type=checkbox]')
       .prop('checked', !hostname_hide_completely)
-      .click(function() {
-        chrome.storage.local.get(
-          {hide_completely: {}},
-          function(items) {
-            const hide_completely = items['hide_completely'];
-            if (hostname_hide_completely) {
-              delete hide_completely[canonical_hostname];
-            } else {
-              hide_completely[canonical_hostname] = true;
-            }
-            chrome.storage.local.set({
-              hide_completely: hide_completely,
-            });
-          },
-        );
+      .click(async () => {
+        const items = await chrome.storage.local.get(
+          {hide_completely: {}});
+        const hide_completely = items['hide_completely'];
+        if (hostname_hide_completely) {
+          delete hide_completely[canonical_hostname];
+        } else {
+          hide_completely[canonical_hostname] = true;
+        }
+        await chrome.storage.local.set({
+          hide_completely: hide_completely,
+        });
       })
       .show()
       .end()
