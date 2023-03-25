@@ -96,6 +96,47 @@ function showErrorRefreshRequired() {
     .show();
 }
 
+function showPageSettings(items, canonical_hostname) {
+  const hostname_hide_completely =
+          items['hide_completely'][canonical_hostname] === true;
+  $('#status').hide();
+  $('#hide_completely')
+    .find('#hide_completely_label')
+    .html('Indicate filtered content on this site')
+    .show()
+    .end()
+    .find('input[type=checkbox]')
+    .prop('checked', !hostname_hide_completely)
+    .click(async () => {
+      const items = await chrome.storage.local.get(
+        {hide_completely: {}});
+      const hide_completely = items['hide_completely'];
+      if (hostname_hide_completely) {
+        delete hide_completely[canonical_hostname];
+      } else {
+        hide_completely[canonical_hostname] = true;
+      }
+      await chrome.storage.local.set({
+        hide_completely: hide_completely,
+      });
+    })
+    .show()
+    .end()
+    .show();
+
+  $('#list').show();
+  // only render list if it is enabled
+  if (items['blacklist'] && items['blacklist'].length !== 0) {
+    const list = $('<ul/>');
+    $.each(items['blacklist'], function(currentValue, trueOrFalse) {
+      $('<li/>').html(currentValue).appendTo(list);
+    });
+    $('#triggers').html(list);
+  } else {
+    $('#triggers').html('blacklist is empty');
+  }
+}
+
 // Shows a list of words generated from the blacklist.
 async function rerender() {
   const items = await chrome.storage.local.get(
@@ -167,44 +208,7 @@ async function rerender() {
     return;
   }
   if (!hostname_disabled) {
-    const hostname_hide_completely =
-            items['hide_completely'][canonical_hostname] === true;
-    $('#status').hide();
-    $('#hide_completely')
-      .find('#hide_completely_label')
-      .html('Indicate filtered content on this site')
-      .show()
-      .end()
-      .find('input[type=checkbox]')
-      .prop('checked', !hostname_hide_completely)
-      .click(async () => {
-        const items = await chrome.storage.local.get(
-          {hide_completely: {}});
-        const hide_completely = items['hide_completely'];
-        if (hostname_hide_completely) {
-          delete hide_completely[canonical_hostname];
-        } else {
-          hide_completely[canonical_hostname] = true;
-        }
-        await chrome.storage.local.set({
-          hide_completely: hide_completely,
-        });
-      })
-      .show()
-      .end()
-      .show();
-
-    $('#list').show();
-    // only render list if it is enabled
-    if (items['blacklist'] && items['blacklist'].length !== 0) {
-      const list = $('<ul/>');
-      $.each(items['blacklist'], function(currentValue, trueOrFalse) {
-        $('<li/>').html(currentValue).appendTo(list);
-      });
-      $('#triggers').html(list);
-    } else {
-      $('#triggers').html('blacklist is empty');
-    }
+    showPageSettings(items, canonical_hostname);
   }
 }
 
