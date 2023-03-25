@@ -4,25 +4,23 @@ import {getCanonicalHostname} from './hostname.js';
 const input = document.getElementById('input');
 
 // Add the word from $("#input") to the stored blacklist
-function addWord() {
+async function addWord() {
   const word = input.value;
   if (word === '') {
     return;
   }
   // Get the stored blacklist
-  chrome.storage.local.get('blacklist', function(items) {
-    let blacklist = items['blacklist'];
-    // Add word to our copy of the blacklist
-    if (blacklist === undefined) {
-      blacklist = {};
-    }
-    blacklist[word] = true;
-    // Set the blacklist with our modified copy
-    chrome.storage.local.set({blacklist: blacklist}, function() {
-      rerender();
-      input.value = '';
-    });
-  });
+  const items = await chrome.storage.local.get('blacklist');
+  let blacklist = items['blacklist'];
+  // Add word to our copy of the blacklist
+  if (blacklist === undefined) {
+    blacklist = {};
+  }
+  blacklist[word] = true;
+  // Set the blacklist with our modified copy
+  await chrome.storage.local.set({blacklist: blacklist});
+  await rerender();
+  input.value = '';
 }
 
 $('#toggle').click(function() {
