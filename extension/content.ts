@@ -1,5 +1,6 @@
 import $ from 'jquery';
 import {getCanonicalHostname} from './hostname.js';
+import {GetOptions} from './options_storage';
 import {regexpFromWordList} from './word_matcher.js';
 
 // This is a hack used by browser_action.ts to check the status of the content
@@ -14,7 +15,7 @@ type DomainBoolMapName = 'hide_completely' | 'disable_site';
 // Utility function for getting settings for the current host.
 async function fetchStatusForHost(key:DomainBoolMapName) {
   const current_host = getCanonicalHostname(window.location.host);
-  const items = await chrome.storage.local.get(key);
+  const items = await GetOptions();
   if (items[key] === undefined) {
     return false;
   }
@@ -168,9 +169,8 @@ function addNotification(elem: JQuery<Node>, put_inside: boolean) {
 
 // Assembles a regex from stored blacklist
 async function makeRegex() {
-  const items = await chrome.storage.local.get(
-    {'blacklist':{}});
-  const bannedWords = items['blacklist'];
+  const items = await GetOptions();
+  const bannedWords = items.blacklist;
   return regexpFromWordList(Object.keys(bannedWords));
 }
 
@@ -290,8 +290,8 @@ function render(enabled_everywhere:boolean, hide_completely:boolean, disable_sit
 async function restart() {
   // todo: Do it in one operation.
   try {
-    const items = await chrome.storage.local.get({enabled: true});
-    const enabled_everywhere = items['enabled'];
+    const items = await GetOptions();
+    const enabled_everywhere = items.enabled;
     const hide_completely = await fetchStatusForHost('hide_completely');
     const disable_site = await fetchStatusForHost('disable_site');
     const regex = await makeRegex();

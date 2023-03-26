@@ -1,5 +1,6 @@
 import $ from 'jquery';
 import {getCanonicalHostname} from './hostname.js';
+import {GetOptions} from './options_storage';
 
 const input:HTMLInputElement = getInputElement();
 
@@ -19,8 +20,8 @@ async function addWord() {
     return;
   }
   // Get the stored blacklist
-  const items = await chrome.storage.local.get('blacklist');
-  let blacklist = items['blacklist'];
+  const items = await GetOptions();
+  let blacklist = items.blacklist;
   // Add word to our copy of the blacklist
   if (blacklist === undefined) {
     blacklist = {};
@@ -32,10 +33,10 @@ async function addWord() {
   input.value = '';
 }
 
-$('#toggle').click(function() {
-  chrome.storage.local.get({enabled: true}, function(items) {
-    chrome.storage.local.set({enabled: !items['enabled']}, rerender);
-  });
+$('#toggle').click(async () => {
+  const items = await GetOptions();
+  await chrome.storage.local.set({enabled: !items['enabled']})
+  await rerender();
 });
 
 // Add the word to the blacklist when the user presses enter
@@ -63,7 +64,7 @@ $('#feedback').click(function() {
 $('#triggers').click(async (e) => {
   if ($(e.target).is('li')) {
     const word = e.target.innerHTML;
-    const items = await chrome.storage.local.get('blacklist');
+    const items = await GetOptions();
     const blacklist = items['blacklist'];
     if (blacklist) {
       delete blacklist[word];
@@ -102,7 +103,7 @@ function showSiteToggle(canonical_hostname:string, hostname_disabled:boolean) {
     .find('input[type=checkbox]')
     .prop('checked', !hostname_disabled)
     .click(async () => {
-      const items = await chrome.storage.local.get({disable_site: {}});
+      const items = await GetOptions();
       const disable_site = items['disable_site'];
       if (hostname_disabled) {
         delete disable_site[canonical_hostname];
@@ -134,8 +135,7 @@ function showPageSettings(items: any, canonical_hostname: string) {
     .find('input[type=checkbox]')
     .prop('checked', !hostname_hide_completely)
     .click(async () => {
-      const items = await chrome.storage.local.get(
-        {hide_completely: {}});
+      const items = await GetOptions();
       const hide_completely = items['hide_completely'];
       if (hostname_hide_completely) {
         delete hide_completely[canonical_hostname];
@@ -167,8 +167,7 @@ function showPageSettings(items: any, canonical_hostname: string) {
 
 // Shows a list of words generated from the blacklist.
 async function rerender() {
-  const items = await chrome.storage.local.get(
-    {blacklist: {}, enabled: true, hide_completely: {}, disable_site: {}});
+  const items = await GetOptions();
   if (items['enabled'] === false) {
     showFilteringPaused();
     return;

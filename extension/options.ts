@@ -1,11 +1,5 @@
 import {getCanonicalHostname} from './hostname.js';
-
-interface Options {
-  blacklist: Record<string, boolean>;
-  hide_completely: Record<string, boolean>;
-  disable_site: Record<string, boolean>;
-  enabled: boolean;
-}
+import {GetOptions} from './options_storage';
 
 // Saves options to chrome.storage.local.
 async function save_options() {
@@ -75,13 +69,7 @@ function getOptionsMapFromTextAreaElement(
 // stored in chrome.storage.
 
 async function restore_options() {
-  const items = await chrome.storage.local.get(
-    {
-      blacklist: {},
-      hide_completely: {},
-      disable_site: {},
-      enabled: true,
-    }) as Options;
+  const items = await GetOptions();
   const hide_completely = items.hide_completely;
   const hide_completely_array = getOptionsArrayFromMap(hide_completely);
   const hide_completely_elem = getTextAreaElementById('hide_completely');
