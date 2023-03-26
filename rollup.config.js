@@ -2,10 +2,11 @@ import {nodeResolve} from '@rollup/plugin-node-resolve';
 import commonjs from '@rollup/plugin-commonjs';
 import {babel} from '@rollup/plugin-babel';
 import eslint from '@rollup/plugin-eslint';
+import typescript from 'rollup-plugin-typescript2';
 
 export default [
   {
-    input: 'extension/background.js',
+    input: 'extension/background.ts',
     output: {
       file: 'build/extension/background_bundle.js',
       format: 'iife',
@@ -18,10 +19,11 @@ export default [
       nodeResolve(),
       commonjs(),
       babel(),
+      typescript(),
     ],
   },
   {
-    input: 'extension/browser_action.js',
+    input: 'extension/browser_action.ts',
     output: {
       file: 'build/extension/browser_action_bundle.js',
       format: 'iife',
@@ -34,10 +36,11 @@ export default [
       nodeResolve(),
       commonjs(),
       babel(),
+      typescript(),
     ],
   },
   {
-    input: 'extension/content.js',
+    input: 'extension/content.ts',
     output: {
       file: 'build/extension/content_bundle.js',
       format: 'iife',
@@ -50,10 +53,11 @@ export default [
       nodeResolve(),
       commonjs(),
       babel(),
+      typescript(),
     ],
   },
   {
-    input: 'extension/options.js',
+    input: 'extension/options.ts',
     output: {
       file: 'build/extension/options_bundle.js',
       format: 'iife',
@@ -66,6 +70,7 @@ export default [
       nodeResolve(),
       commonjs(),
       babel(),
+      typescript(),
     ],
   },
 ];

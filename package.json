@@ -2,8 +2,8 @@
   "scripts": {
     "build": "./prepare_extension.sh",
     "format": "prettier --write . --ignore-path .prettierignore",
-    "lint": "eslint . --ext .js",
-    "lint:fix": "eslint . --ext .js --fix",
+    "lint": "eslint . --ext .ts",
+    "lint:fix": "eslint . --ext .ts --fix",
     "test": "jasmine"
   },
   "devDependencies": {
@@ -18,7 +18,9 @@
     "lint-staged": "^13.2.0",
     "prettier": "^2.8.7",
     "rollup": "^3.20.1",
-    "rollup-plugin-commonjs": "^10.1.0"
+    "rollup-plugin-commonjs": "^10.1.0",
+    "rollup-plugin-typescript2": "^0.34.1",
+    "typescript": "^5.0.2"
   },
   "dependencies": {
     "jquery": "^3.6.4"
@@ -29,7 +31,7 @@
     }
   },
   "lint-staged": {
-    "*.js": [
+    "*.ts": [
       "npm run lint:fix",
       "git add"
     ],
