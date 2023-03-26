@@ -1,7 +1,16 @@
 import $ from 'jquery';
 import {getCanonicalHostname} from './hostname.js';
 
-const input = document.getElementById('input');
+const input:HTMLInputElement = getInputElement();
+
+function getInputElement() : HTMLInputElement {
+  const e = document.getElementById('input');
+  if (!(e instanceof HTMLInputElement)) {
+    console.log('expected input to be an HTMLInputElement', e);
+    throw new Error('Expected input to be an HTMLInputElement');
+  }
+  return e;
+}
 
 // Add the word from $("#input") to the stored blacklist
 async function addWord() {
@@ -52,8 +61,8 @@ $('#feedback').click(function() {
 
 // Remove any word in the blacklist that is clicked from the storage
 $('#triggers').click(async (e) => {
-  if ($(event.target).is('li')) {
-    const word = event.target.innerHTML;
+  if ($(e.target).is('li')) {
+    const word = e.target.innerHTML;
     const items = await chrome.storage.local.get('blacklist');
     const blacklist = items['blacklist'];
     if (blacklist) {
@@ -72,7 +81,7 @@ function showFilteringPaused() {
   $('#status').text('Filter Anything Everywhere is paused.').show();
 }
 
-function showError(msg) {
+function showError(msg:string) {
   $('#disable_site input[type=checkbox]').hide();
   $('#disable_site_label').hide();
   $('#disable_site').show();
@@ -84,7 +93,7 @@ function showError(msg) {
     .show();
 }
 
-function showSiteToggle(canonical_hostname, hostname_disabled) {
+function showSiteToggle(canonical_hostname:string, hostname_disabled:boolean) {
   $('#disable_site')
     .find('#disable_site_label')
     .html('Filter ' + canonical_hostname)
@@ -113,7 +122,7 @@ function hidePageSettings() {
   $('#hide_completely').hide();
 }
 
-function showPageSettings(items, canonical_hostname) {
+function showPageSettings(items: any, canonical_hostname: string) {
   const hostname_hide_completely =
           items['hide_completely'][canonical_hostname] === true;
   $('#status').hide();
@@ -144,11 +153,13 @@ function showPageSettings(items, canonical_hostname) {
   $('#list').show();
   // only render list if it is enabled
   if (items['blacklist'] && items['blacklist'].length !== 0) {
-    const list = $('<ul/>');
-    $.each(items['blacklist'], function(currentValue, trueOrFalse) {
-      $('<li/>').html(currentValue).appendTo(list);
+    const blacklist = items['blacklist'];
+    const $ul = $('<ul/>');
+    Object.entries(blacklist).forEach(([key, value]) => {
+      const $li = $('<li/>').text(key);
+      $ul.append($li);
     });
-    $('#triggers').html(list);
+    $('#triggers').empty().append($ul);
   } else {
     $('#triggers').html('blacklist is empty');
   }
@@ -168,9 +179,17 @@ async function rerender() {
     currentWindow: true,
   });
 
+  if (tab.id === undefined) {
+    showError('Oops! Cannot determine the active tab!');
+    throw new Error('Cannot determine the active tab!');
+  }
+
   const injection = {
     target: {tabId: tab.id},
     func: () => {
+      // This is a hack to check the status of the content script.
+      // The value is set in content.ts.
+      // @ts-expect-error Property 'hasAqi' does not exist on type 'Window & typeof globalThis'.
       return window.hasAqi;
     },
   };
@@ -186,7 +205,13 @@ async function rerender() {
     return;
   }
 
+  if (tab.url === undefined) {
+    showError('Oops! Cannot determine the URL of the active tab!');
+    throw new Error('Tab has undefined URL!');
+  }
+
   $('#toggle').html('&#10074;&#10074;').removeClass('resume').show();
+
   const tab_url = new URL(tab.url);
   const canonical_hostname = getCanonicalHostname(tab_url.hostname);
   const hostname_disabled =

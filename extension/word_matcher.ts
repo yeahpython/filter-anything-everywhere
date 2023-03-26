@@ -1,13 +1,13 @@
 // Escape bad characters from user input, but allow wildcards.
-function escapeRegExp(str) {
+function escapeRegExp(str:string) {
   return str
     .replace(/[\-\[\]\/\{\}\(\)\+\.\\\^\$\|]/g, '\\$&')
     .replace(/\*/g, '[^\\s]*')
     .replace(/\?/g, '[^\\s]');
 }
 
-export function regexpFromWordList(bannedWords) {
-  const escapedBannedWords = bannedWords.map((word) => {
+export function regexpFromWordList(bannedWords:string[]) {
+  const escapedBannedWords = bannedWords.map((word:string) => {
     let result = escapeRegExp(word);
 
     // Require word boundaries next to letters except in languages that don't

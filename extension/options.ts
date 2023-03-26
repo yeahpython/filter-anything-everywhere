@@ -1,97 +1,115 @@
 import {getCanonicalHostname} from './hostname.js';
 
-// Saves options to chrome.storage.local.
-function save_options() {
-  const hide_completely_string =
-    document.getElementById('hide_completely').value;
-  const hide_completely_strings = hide_completely_string.split('\n');
-  const hide_completely = {};
-  hide_completely_strings.forEach(function(element) {
-    if (element) {
-      hide_completely[getCanonicalHostname(element)] = true;
-    }
-  });
-
-  const blacklist_string = document.getElementById('blacklist').value;
-  const blacklist_strings = blacklist_string.split('\n');
-  const blacklist = {};
-  blacklist_strings.forEach(function(element) {
-    if (element) {
-      blacklist[element] = true;
-    }
-  });
-
-  const disable_site_string = document.getElementById('disable_site').value;
-  const disable_site_strings = disable_site_string.split('\n');
-  const disable_site = {};
-  disable_site_strings.forEach(function(element) {
-    if (element) {
-      disable_site[getCanonicalHostname(element)] = true;
-    }
-  });
-
-  const enabled = document.getElementById('enabled').checked;
-  chrome.storage.local.set(
-    {
-      hide_completely: hide_completely,
-      blacklist: blacklist,
-      disable_site: disable_site,
-      enabled: enabled,
-    },
-    function() {
-      // Update status to let user know options were saved.
-      const status = document.getElementById('status');
-      status.textContent = 'Options saved.';
-      setTimeout(function() {
-        status.textContent = '';
-      }, 750);
-    },
-  );
+interface Options {
+  blacklist: Record<string, boolean>;
+  hide_completely: Record<string, boolean>;
+  disable_site: Record<string, boolean>;
+  enabled: boolean;
 }
+
+// Saves options to chrome.storage.local.
+async function save_options() {
+  const hide_completely_elem = getTextAreaElementById('hide_completely');
+  const hide_completely = getOptionsMapFromTextAreaElement(hide_completely_elem, getCanonicalHostname);
+
+  const blacklist_elem = getTextAreaElementById('blacklist');
+  const blacklist = getOptionsMapFromTextAreaElement(blacklist_elem);
+
+  const disable_site_elem = getTextAreaElementById('disable_site');
+  const disable_site = getOptionsMapFromTextAreaElement(disable_site_elem, getCanonicalHostname);
+
+  const enabled = (document.getElementById('enabled') as HTMLInputElement).checked;
+
+  await chrome.storage.local.set({ hide_completely, blacklist, disable_site, enabled });
+  const status = document.getElementById('status');
+  if (!(status instanceof HTMLElement)) {
+    throw new Error(`Expected element with ID 'status' to be HTMLTextAreaElement`)
+  }
+  status.textContent = 'Options saved.';
+  setTimeout(() => {
+    status.textContent = '';
+  }, 750);
+}
+
+function getInputElementById(id: string): HTMLInputElement {
+  const elem = document.getElementById(id);
+  if (!(elem instanceof HTMLInputElement)) {
+    throw new Error(`Expected element with ID '${id}' to be HTMLInputElement`);
+  }
+  return elem;
+}
+
+function getTextAreaElementById(id: string): HTMLTextAreaElement {
+  const elem = document.getElementById(id);
+  if (!(elem instanceof HTMLTextAreaElement)) {
+    throw new Error(`Expected element with ID '${id}' to be HTMLTextAreaElement`);
+  }
+  return elem;
+}
+
+function getButtonElementById(id: string): HTMLButtonElement {
+  const elem = document.getElementById(id);
+  if (!(elem instanceof HTMLButtonElement)) {
+    throw new Error(`Expected element with ID '${id}' to be HTMLButtonElement`);
+  }
+  return elem;
+}
+
+function getOptionsMapFromTextAreaElement(
+  elem: HTMLTextAreaElement,
+  keyMapper: (x: string) => string = (x) => x.trim()
+): Record<string, boolean> {
+  const strings = elem.value.split('\n');
+  const map: Record<string, boolean> = {};
+  strings.forEach((line) => {
+    const key = keyMapper(line.trim());
+    if (key) {
+      map[key] = true;
+    }
+  });
+  return map;
+}
+
 
 // Restores select box and checkbox state using the preferences
 // stored in chrome.storage.
-function restore_options() {
-  chrome.storage.local.get(
+
+async function restore_options() {
+  const items = await chrome.storage.local.get(
     {
       blacklist: {},
       hide_completely: {},
       disable_site: {},
       enabled: true,
-    },
-    function(items) {
-      const hide_completely = items['hide_completely'];
-      const hide_completely_array = [];
-      for (const key in hide_completely) {
-        if (hide_completely[key] === true) {
-          hide_completely_array.push(key);
-        }
-      }
-      document.getElementById('hide_completely').value =
-        hide_completely_array.join('\n');
+    }) as Options;
+  const hide_completely = items.hide_completely;
+  const hide_completely_array = getOptionsArrayFromMap(hide_completely);
+  const hide_completely_elem = getTextAreaElementById('hide_completely');
+  hide_completely_elem.value = hide_completely_array.join('\n');
 
-      const blacklist = items['blacklist'];
-      const blacklist_array = [];
-      for (const key in blacklist) {
-        if (blacklist[key] === true) {
-          blacklist_array.push(key);
-        }
-      }
-      document.getElementById('blacklist').value = blacklist_array.join('\n');
+  const blacklist = items.blacklist;
+  const blacklist_array = getOptionsArrayFromMap(blacklist);
+  const blacklist_elem = getTextAreaElementById('blacklist');
+  blacklist_elem.value = blacklist_array.join('\n');
 
-      const disable_site = items['disable_site'];
-      const disable_site_array = [];
-      for (const key in disable_site) {
-        if (disable_site[key] === true) {
-          disable_site_array.push(key);
-        }
-      }
-      document.getElementById('disable_site').value =
-        disable_site_array.join('\n');
+  const disable_site = items.disable_site;
+  const disable_site_array = getOptionsArrayFromMap(disable_site);
+  const disable_site_elem = getTextAreaElementById('disable_site');
+  disable_site_elem.value = disable_site_array.join('\n');
 
-      document.getElementById('enabled').checked = items.enabled;
-    },
-  );
+  const enabled = items.enabled;
+  getInputElementById('enabled').checked = enabled;
 }
+
+function getOptionsArrayFromMap(map: Record<string, boolean>): string[] {
+  const array: string[] = [];
+  for (const key in map) {
+    if (map[key] === true) {
+      array.push(key);
+    }
+  }
+  return array;
+}
+
 document.addEventListener('DOMContentLoaded', restore_options);
-document.getElementById('save').addEventListener('click', save_options);
+getButtonElementById('save').addEventListener('click', save_options);

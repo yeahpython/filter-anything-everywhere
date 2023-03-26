@@ -2,12 +2,17 @@ import $ from 'jquery';
 import {getCanonicalHostname} from './hostname.js';
 import {regexpFromWordList} from './word_matcher.js';
 
+// This is a hack used by browser_action.ts to check the status of the content
+// script.
+// @ts-expect-error Property 'hasAqi' does not exist on type 'Window & typeof globalThis'.
 window.hasAqi = true;
 
 const AQI_PREFIX = 'aqi-';
 
+type DomainBoolMapName = 'hide_completely' | 'disable_site';
+
 // Utility function for getting settings for the current host.
-async function fetchStatusForHost(key, cb) {
+async function fetchStatusForHost(key:DomainBoolMapName) {
   const current_host = getCanonicalHostname(window.location.host);
   const items = await chrome.storage.local.get(key);
   if (items[key] === undefined) {
@@ -18,7 +23,7 @@ async function fetchStatusForHost(key, cb) {
 
 const min_feed_neighbors = 3;
 
-function isSimilar(my_rect, sib_rect) {
+function isSimilar(my_rect:DOMRect, sib_rect:DOMRect) {
   const my_x = my_rect.left + my_rect.width / 2;
   const sib_x = sib_rect.left + sib_rect.width / 2;
 
@@ -34,7 +39,7 @@ function isSimilar(my_rect, sib_rect) {
   }
 }
 
-function getFeedlikeAncestor(node) {
+function getFeedlikeAncestor(node:Node) {
   // parents ordered by document order
   const parents = $(node).add($(node).parents());
   const siblingness_counts = parents.map(function(index, elem) {
@@ -49,7 +54,7 @@ function getFeedlikeAncestor(node) {
     // when there were large hidden arrays of objects, e.g. in Youtube, which would
     // cause the whole page to be hidden. This new setting hopefully is less prone
     // to hiding entire lists.
-    if (elem.nodeType != Node.ELEMENT_NODE) {
+    if (!(elem instanceof Element)) {
       return 0;
     }
     const myRect = elem.getBoundingClientRect();
@@ -122,8 +127,8 @@ function inIframe() {
   }
 }
 
-function addNotification(elem, put_inside) {
-  const $elem = $(elem);
+function addNotification(elem: JQuery<Node>, put_inside: boolean) {
+  const $elem = $(elem); // todo: clean this up
   if ($.isWindow($elem)) {
     console.log('Ignoring window');
     return;
@@ -136,8 +141,13 @@ function addNotification(elem, put_inside) {
   }
   const $positioner = $('<div/>').addClass('aqi-notification');
   const $contents = $('<div/>')
-    .addClass('aqi-inside')
-    .css('max-width', $elem.width());
+    .addClass('aqi-inside');
+  const width = $elem.width();
+  if (width === undefined) {
+    console.warn('Cannot determine width of element!');
+  } else {
+    $contents.css('max-width', width.toString());
+  }
   const $arrow = $('<div/>').addClass('aqi-arrow');
   const $arrow_wrapper = $('<div/>')
     .addClass('aqi-arrow-wrapper')
@@ -158,18 +168,14 @@ function addNotification(elem, put_inside) {
 
 // Assembles a regex from stored blacklist
 async function makeRegex() {
-  try {
-    const items = await chrome.storage.local.get([
-      'blacklist' /* , "enabled"*/,
-    ]);
-    const bannedWords = items['blacklist'];
-    return regexpFromWordList(Object.keys(bannedWords));
-  } catch (err) {
-    console.log('Ran into error while making regex:' + err.message);
-  }
+  const items = await chrome.storage.local.get(
+    {'blacklist':{}});
+  const bannedWords = items['blacklist'];
+  return regexpFromWordList(Object.keys(bannedWords));
 }
 
-function processTextNode(node, hide_completely, regex) {
+function processTextNode(node:CharacterData, hide_completely:boolean, regex:RegExp) {
+  // todo: Early return
   if (regex.test(node.data)) {
     if ($(node).add($(node).parents()).filter(':hidden').length) {
       return;
@@ -194,9 +200,9 @@ function processTextNode(node, hide_completely, regex) {
   }
 }
 
-let observer = null;
+let observer:MutationObserver|null = null;
 
-function startObservingChanges(processCallback) {
+function startObservingChanges(processCallback:(node:CharacterData)=>void) {
   const targetNode = document.documentElement;
   const config = {
     attributes: false,
@@ -204,9 +210,12 @@ function startObservingChanges(processCallback) {
     characterData: true,
     subtree: true,
   };
-  const callback = function(mutationsList, observer) {
+  const callback = function(mutationsList:MutationRecord[], observer:MutationObserver) {
     for (const mutation of mutationsList) {
       if (mutation.type === 'characterData') {
+        if (!(mutation.target instanceof CharacterData)) {
+          throw new Error('expected mutation.target to be instance of CharacterData');
+        }
         processCallback(mutation.target);
       } else if (mutation.type === 'childList') {
         for (const node of mutation.addedNodes) {
@@ -214,10 +223,11 @@ function startObservingChanges(processCallback) {
             node,
             NodeFilter.SHOW_TEXT,
             null,
-            false,
           );
           while (walk.nextNode()) {
-            processCallback(walk.currentNode);
+            if (walk.currentNode instanceof CharacterData) {
+              processCallback(walk.currentNode);
+            }
           }
         }
       } else if (mutation.type === 'attributes') {
@@ -225,10 +235,11 @@ function startObservingChanges(processCallback) {
           mutation.target,
           NodeFilter.SHOW_TEXT,
           null,
-          false,
         );
         while (walk.nextNode()) {
-          processCallback(walk.currentNode);
+          if (walk.currentNode instanceof CharacterData) {
+            processCallback(walk.currentNode);
+          }
         }
       }
     }
@@ -251,14 +262,14 @@ function clearAll() {
   $('.aqi-debug').removeClass('aqi-debug');
 }
 
-function render(enabled_everywhere, hide_completely, disable_site, regex) {
+function render(enabled_everywhere:boolean, hide_completely:boolean, disable_site:boolean, regex:RegExp) {
   clearAll();
 
   if (!enabled_everywhere || disable_site) {
     return;
   }
 
-  const process = (node) => {
+  const process = (node:CharacterData) => {
     processTextNode(node, hide_completely, regex);
   };
   startObservingChanges(process);
@@ -267,10 +278,11 @@ function render(enabled_everywhere, hide_completely, disable_site, regex) {
     document.documentElement,
     NodeFilter.SHOW_TEXT,
     null,
-    false,
   );
   while (walk.nextNode()) {
-    process(walk.currentNode);
+    if (walk.currentNode instanceof CharacterData) {
+      process(walk.currentNode);
+    }
   }
 }
 
