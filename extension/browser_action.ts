@@ -151,18 +151,13 @@ function showPageSettings(items: Options, canonical_hostname: string) {
     .show();
 
   $('#list').show();
-  // only render list if it is enabled
   const words = Object.entries(items['blacklist']);
-  if (words.length) {
-    const $ul = $('<ul/>');
-    words.forEach(([key]) => {
-      const $li = $('<li/>').text(key);
-      $ul.append($li);
-    });
-    $('#triggers').empty().append($ul);
-  } else {
-    $('#triggers').html('blacklist is empty');
-  }
+  const $ul = $('<ul/>');
+  words.forEach(([key]) => {
+    const $li = $('<li/>').text(key);
+    $ul.append($li);
+  });
+  $('#triggers').empty().append($ul);
 }
 
 // Shows a list of words generated from the blacklist.
