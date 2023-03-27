@@ -1,6 +1,6 @@
 import $ from 'jquery';
 import {getCanonicalHostname} from './hostname.js';
-import {GetOptions} from './options_storage';
+import {GetOptions, Options} from './options_storage';
 
 const input:HTMLInputElement = getInputElement();
 
@@ -123,7 +123,7 @@ function hidePageSettings() {
   $('#hide_completely').hide();
 }
 
-function showPageSettings(items: any, canonical_hostname: string) {
+function showPageSettings(items: Options, canonical_hostname: string) {
   const hostname_hide_completely =
           items['hide_completely'][canonical_hostname] === true;
   $('#status').hide();
@@ -152,10 +152,10 @@ function showPageSettings(items: any, canonical_hostname: string) {
 
   $('#list').show();
   // only render list if it is enabled
-  if (items['blacklist'] && items['blacklist'].length !== 0) {
-    const blacklist = items['blacklist'];
+  const words = Object.entries(items['blacklist']);
+  if (words.length) {
     const $ul = $('<ul/>');
-    Object.entries(blacklist).forEach(([key, value]) => {
+    words.forEach(([key, value]) => {
       const $li = $('<li/>').text(key);
       $ul.append($li);
     });
