@@ -18,7 +18,9 @@ export default [
       }),
       nodeResolve(),
       commonjs(),
-      babel(),
+      babel({
+        babelHelpers: 'bundled',
+      }),
       typescript(),
     ],
   },
@@ -35,7 +37,9 @@ export default [
       }),
       nodeResolve(),
       commonjs(),
-      babel(),
+      babel({
+        babelHelpers: 'bundled',
+      }),
       typescript(),
     ],
   },
@@ -52,7 +56,9 @@ export default [
       }),
       nodeResolve(),
       commonjs(),
-      babel(),
+      babel({
+        babelHelpers: 'bundled',
+      }),
       typescript(),
     ],
   },
@@ -69,7 +75,9 @@ export default [
       }),
       nodeResolve(),
       commonjs(),
-      babel(),
+      babel({
+        babelHelpers: 'bundled',
+      }),
       typescript(),
     ],
   },
