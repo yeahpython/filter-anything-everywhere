@@ -1,0 +1,12 @@
+{
+  "spec_dir": "extension",
+  "spec_files": [
+    "**/*.spec.ts"
+  ],
+  "helpers": [
+    "../../node_modules/@types/jasmine/index.d.ts",
+    "../../node_modules/ts-node/register"
+  ],
+  "random": false,
+  "jsLoader": "import"
+}

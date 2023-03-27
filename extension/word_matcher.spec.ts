@@ -1,4 +1,4 @@
-import {regexpFromWordList} from '../extension/word_matcher.js';
+import {regexpFromWordList} from './word_matcher';
 
 describe('regexpFromWordList', () => {
   describe('with [\'bob\']', () => {
@@ -56,6 +56,18 @@ describe('regexpFromWordList', () => {
     });
     it('should not allow zero letter substitution', () => {
       expect(re.test('ac')).toBe(false);
+    });
+  });
+  it('should match back slash', () => {
+    const re = regexpFromWordList(['A\\B']);
+    expect(re.test('A\\B')).toBe(true);
+  });
+  describe("when matching special characters", () => {
+    const specialCharacters = ['-', '[', '\\', ']', '/', '{', '}', '(', ')', '+', '.', '^', '$', '|'];
+    const table = specialCharacters.map((str) => [[str], true]);
+    it.each(table)('should handle %s', (words: string[], match: boolean) => {
+      const re = regexpFromWordList(words);
+      expect(re.test(words[0])).toBe(true);
     });
   });
   describe('with Chinese [\'你好\']', () => {

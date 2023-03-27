@@ -1,7 +1,7 @@
 // Escape bad characters from user input, but allow wildcards.
 function escapeRegExp(str:string) {
   return str
-    .replace(/[\-\[\]\/\{\}\(\)\+\.\\\^\$\|]/g, '\\$&')
+    .replace(/[\\[\]/{}()+.^$|]/g, '\\$&')
     .replace(/\*/g, '[^\\s]*')
     .replace(/\?/g, '[^\\s]');
 }
