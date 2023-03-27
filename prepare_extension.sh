@@ -12,7 +12,7 @@ rm -r $BUILD_DIR/*
 
 EXT_COPY=$BUILD_DIR/extension
 
-rsync -ab --exclude '*.js' extension/ $EXT_COPY
+rsync -ab --exclude *.ts --exclude .DS_Store extension/ $EXT_COPY
 
 rollup -c
 
