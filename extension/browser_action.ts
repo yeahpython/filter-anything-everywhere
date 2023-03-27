@@ -155,7 +155,7 @@ function showPageSettings(items: Options, canonical_hostname: string) {
   const words = Object.entries(items['blacklist']);
   if (words.length) {
     const $ul = $('<ul/>');
-    words.forEach(([key, value]) => {
+    words.forEach(([key]) => {
       const $li = $('<li/>').text(key);
       $ul.append($li);
     });
@@ -228,6 +228,4 @@ async function rerender() {
 // Initial render
 rerender();
 
-chrome.storage.onChanged.addListener(function(changes, namespace) {
-  rerender();
-});
+chrome.storage.onChanged.addListener(rerender);
