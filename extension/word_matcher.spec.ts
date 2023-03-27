@@ -81,6 +81,9 @@ describe('regexpFromWordList', () => {
     it('should allow single character substitution', () => {
       expect(re.test('你好吗')).toBe(true);
     });
+    it('should not allow multi-character substitution', () => {
+      expect(re.test('你还好吗')).toBe(false);
+    });
   });
   describe('with Japanese [\'です\']', () => {
     const re = regexpFromWordList(['です']);
@@ -100,6 +103,15 @@ describe('regexpFromWordList', () => {
       expect(re.test('учителище')).toBe(false);
     });
   });
+  describe('with emoji [\'🤠\']', () => {
+    const re = regexpFromWordList(['🤠']);
+    it('should match even if not surrounded by spaces', () => {
+      expect(re.test('Hi🤠!')).toBe(true);
+    });
+    it('should not match unrelated words', () => {
+      expect(re.test('Hi🤖!')).toBe(false);
+    });
+  });
   describe('with parenthesized terms [\'(sic)\']', () => {
     const re = regexpFromWordList(['(sic)']);
     it('should match normally when surrounded by spaces', () => {
@@ -108,6 +120,9 @@ describe('regexpFromWordList', () => {
 
     it('should also match when embedded in a word', () => {
       expect(re.test('Abc(sic)def')).toBe(true);
+    });
+    it('should not match word missing parentheses', () => {
+      expect(re.test('Jurassic park')).toBe(false);
     });
   });
 });
