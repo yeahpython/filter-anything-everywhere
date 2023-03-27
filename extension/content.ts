@@ -8,8 +8,6 @@ import {regexpFromWordList} from './word_matcher.js';
 // @ts-expect-error Property 'hasAqi' does not exist on type 'Window & typeof globalThis'.
 window.hasAqi = true;
 
-const AQI_PREFIX = 'aqi-';
-
 type DomainBoolMapName = 'hide_completely' | 'disable_site';
 
 // Utility function for getting settings for the current host.
@@ -44,8 +42,6 @@ function getFeedlikeAncestor(node:Node) {
   // parents ordered by document order
   const parents = $(node).add($(node).parents());
   const siblingness_counts = parents.map(function(index, elem) {
-    const num_children = $(elem).children().length;
-
     if ($(elem).prop('tagName') == 'LI') {
       return min_feed_neighbors + 1; // Generic "big" number
     }
@@ -69,8 +65,6 @@ function getFeedlikeAncestor(node:Node) {
       .siblings()
       .filter(function(index, sib) {
         // Function returns true iff sibling has a class in common with the original.
-        const $sib = $(sib);
-
         if (sib.nodeType != Node.ELEMENT_NODE) {
           return false;
         }
@@ -210,7 +204,7 @@ function startObservingChanges(processCallback:(node:CharacterData)=>void) {
     characterData: true,
     subtree: true,
   };
-  const callback = function(mutationsList:MutationRecord[], observer:MutationObserver) {
+  const callback = function(mutationsList:MutationRecord[]) {
     for (const mutation of mutationsList) {
       if (mutation.type === 'characterData') {
         if (!(mutation.target instanceof CharacterData)) {
@@ -314,8 +308,6 @@ async function restart() {
 }
 
 // When the blacklist changes the regex needs to be updated
-chrome.storage.onChanged.addListener(function(changes, namespace) {
-  restart();
-});
+chrome.storage.onChanged.addListener(restart);
 
 restart();
