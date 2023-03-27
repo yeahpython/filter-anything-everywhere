@@ -108,11 +108,16 @@ function findMyId() {
   }
   return '';
 }
-try {
-  var my_id = findMyId();
-} catch (err) {
-  var my_id = 'ignore';
+
+function findMyIdOrPlaceHolder(): string {
+  try {
+    return findMyId();
+  } catch (err) {
+    return 'ignore';
+  }
 }
+
+const my_id = findMyIdOrPlaceHolder();
 
 function inIframe() {
   try {
