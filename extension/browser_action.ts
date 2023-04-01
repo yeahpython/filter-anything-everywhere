@@ -13,24 +13,11 @@ function getInputElement() : HTMLInputElement {
   return e;
 }
 
-// Add the word from $("#input") to the stored blacklist
-async function addWord() {
-  const word = input.value;
-  if (word === '') {
-    return;
-  }
-  // Get the stored blacklist
+async function addWord(word: string) {
   const items = await GetOptions();
-  let blacklist = items.blacklist;
-  // Add word to our copy of the blacklist
-  if (blacklist === undefined) {
-    blacklist = {};
-  }
-  blacklist[word] = true;
-  // Set the blacklist with our modified copy
-  await chrome.storage.local.set({blacklist: blacklist});
+  items.blacklist[word] = true;
+  await chrome.storage.local.set({blacklist: items.blacklist});
   await rerender();
-  input.value = '';
 }
 
 $('#toggle').click(async () => {
@@ -39,10 +26,10 @@ $('#toggle').click(async () => {
   await rerender();
 });
 
-// Add the word to the blacklist when the user presses enter
 $('#input').keyup(function(e) {
-  if (e.keyCode == 13) {
-    addWord();
+  if (e.keyCode == /* enter */13 && input.value !== '') {
+    addWord(input.value);
+    input.value = '';
   }
 });
 
