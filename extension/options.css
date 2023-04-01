@@ -1,0 +1,66 @@
+body {
+    color: rgb(51, 51, 51);
+    cursor: default;
+    margin: 14px 17px;
+    font-family: system-ui, sans-serif;
+    font-size: 75%;
+}
+
+input[type="checkbox"] {
+    height: 13px;
+    position: relative;
+    vertical-align: middle;
+    width: 13px;
+}
+
+:-webkit-any(button, input[type="button"], input[type="submit"]) {
+    padding-inline-end: 10px;
+    padding-inline-start: 10px;
+}
+
+:-webkit-any(button, input[type="button"], input[type="submit"]), select {
+    min-height: 2em;
+    min-width: 4em;
+}
+
+:-webkit-any(button, input[type="button"], input[type="submit"]), select, input[type="checkbox"], input[type="radio"] {
+    appearance: none;
+    user-select: none;
+    background-image: linear-gradient(rgb(237, 237, 237), rgb(237, 237, 237) 38%, rgb(222, 222, 222));
+    box-shadow: rgba(0, 0, 0, 0.08) 0px 1px 0px, rgba(255, 255, 255, 0.75) 0px 1px 2px inset;
+    color: rgb(68, 68, 68);
+    text-shadow: rgb(240, 240, 240) 0px 1px 0px;
+    border-width: 1px;
+    border-style: solid;
+    border-color: rgba(0, 0, 0, 0.25);
+    border-image: initial;
+    border-radius: 2px;
+    font: inherit;
+    margin: 0px 1px 0px 0px;
+    outline: none;
+}
+
+input[type="number"], input[type="password"], input[type="search"], input[type="text"], input[type="url"], input:not([type]), textarea {
+    box-sizing: border-box;
+    color: rgb(68, 68, 68);
+    min-height: 2em;
+    border-width: 1px;
+    border-style: solid;
+    border-color: rgb(191, 191, 191);
+    border-image: initial;
+    border-radius: 2px;
+    font: inherit;
+    margin: 0px;
+    padding: 3px 3px 4px;
+    outline: none;
+}
+
+input[type="checkbox"]:checked::before {
+    user-select: none;
+    background-image: -webkit-image-set(url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAsAAAALCAQAAAADpb+tAAAAZ0lEQVR4AWNAA2xAiAXEM8xiMEAXVGJYz7AZCFEkmBi6wYKtEC4/gxqY9gILrmYQhwiXMWxkiAVyVoOFfSCCpkAmCK4Fk+1QA4GqekECUAMkka0KY9gIFvZDd5oawwyGBqACdIDqOwAQzBnTWnnU+gAAAABJRU5ErkJggg==) 1x, url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABYAAAAWCAQAAABuvaSwAAAAvElEQVR4XrXPMUrDYBzG4UeRZnAQnFxq3XT3AsVABm8QPIHQIeAJuoqb2s1BcHAIin4HVLqEvx9NQgb5rc/wvn4mNBUbqlKDcezCp6Qexxx7lbapx/CBe6mrHsYrKXQ7hKtIre1nOD/W9eiQiK80inis680JEc+1kien+TEfzom4sJG2aZXxmG9LIqaRerohx6V2J72zl2NY2OTUgxm7MEU25sURfZg4590Zw5iFZ8mXS0ZwN+eaPjyh/8O/H7bzPJ5NOo0AAAAASUVORK5CYII=) 2x);
+    background-size: 100% 100%;
+    content: "";
+    display: block;
+    height: 100%;
+    width: 100%;
+}
