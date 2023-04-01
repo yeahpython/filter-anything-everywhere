@@ -16,5 +16,6 @@ rsync -ab --exclude *.ts --exclude .DS_Store extension/ $EXT_COPY
 
 rollup -c
 
-zip -r extension.zip $EXT_COPY
-echo "The extension has been created at 'extension.zip'."
+(cd $EXT_COPY && zip -r extension.zip *)
+mv $EXT_COPY/extension.zip $BUILD_DIR/extension.zip
+echo "The extension has been created at '$BUILD_DIR/extension.zip'."
