@@ -7,3 +7,7 @@ Get dependencies:
 
 Build the extension:
 `npm run build`
+
+Run tests:
+`npm run test`
+
